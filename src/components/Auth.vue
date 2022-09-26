@@ -158,7 +158,6 @@
               <input
                 type="checkbox"
                 class="w-4 h-4 float-left -ml-6 mt-1 rounded"
-                v-model="form.tos"
               />
               <label class="inline-block">Accept terms of service</label>
             </div>
@@ -178,7 +177,7 @@
 
 <script>
 // import { Form, input } from "vee-validate";
-import { auth, usersCollection } from "@/includes/firebase";
+// import { auth, usersCollection } from "@/includes/firebase";
 import { mapState, mapWritableState } from "pinia";
 import useModalStore from "@/stores/modal";
 export default {
@@ -220,21 +219,21 @@ export default {
     async register() {
       console.log(this.form.email);
       let userCred = null;
-      try {
-        //credentials
-        userCred = await auth().createUserWithEmailAndPassword(
-          this.form.email,
-          this.form.password
-        );
-        alert("données bien enregistrées");
-      } catch (error) {
-        alert("pas enregistrées");
-      }
+      // try {
+      //   //credentials
+      // //   userCred = await auth().createUserWithEmailAndPassword(
+      // //     this.form.email,
+      // //     this.form.password
+      // //   );
+      // //   alert("données bien enregistrées");
+      // // } catch (error) {
+      // //   alert("pas enregistrées");
+      // }
 
-      this.regInSubmission = false;
-      this.regAlertVariant = "bg-red-500";
-      this.regAlertMsg = "An unexpected error occurred. Please try again later";
-      return;
+      // this.regInSubmission = false;
+      // this.regAlertVariant = "bg-red-500";
+      // this.regAlertMsg = "An unexpected error occurred. Please try again later";
+      // return;
     },
   },
 };
