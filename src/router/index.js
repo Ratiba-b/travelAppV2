@@ -1,55 +1,23 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home.vue";
-import Dashboard from "../views/Dashboard.vue";
-import Dynamic from "../views/Dynamic.vue";
-import Travels from "../views/Travels.vue";
-import AddTravels from "../views/AddTravels.vue";
-import Step2AddTravel from "../components/travels/Step2AddTravel.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
-      name: "home",
+      name: "Home",
       component: () => import("../views/Home.vue"),
     },
     {
-      path: "/dashboard",
-      name: "dashboard",
+      path: "/login", // landing oage
+      name: "login",
+      component: () => import("../views/Login.vue"),
+    },
+    {
+      path: "/register",
+      name: "register",
 
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import("../views/Dashboard.vue"),
-    },
-    {
-      path: "/dynamic/:id",
-      name: "dynamic",
-      component: () => import("../views/Dynamic.vue"),
-      props: true,
-    },
-    {
-      path: "/travels",
-      name: "travels",
-      component: () => import("../views/Travels.vue"),
-    },
-    {
-      path: "/travels/add",
-      name: "addTravels",
-      component: () => import("../views/AddTravels.vue"),
-    },
-
-    {
-      path: "/travels/add/step2",
-      name: "Step2AddTravel",
-      component: () => import("../components/travels/Step2AddTravel.vue"),
-    },
-    {
-      path: "/",
-      alias: "/tutorials",
-      name: "tutorials",
-      component: () => import("../components/TutorialsList.vue"),
+      component: () => import("../views/Register.vue"),
     },
     {
       path: "/tutorials/:id",
@@ -61,6 +29,58 @@ const router = createRouter({
       name: "add",
       component: () => import("../components/AddTutorial.vue"),
     },
+    {
+      path: "/travels",
+      name: "travels",
+      component: () => import("../views/TravelsList.vue"),
+    },
+    {
+      path: "/edit/travel/:id",
+      name: "addTravels",
+      component: () => import("../views/EditTravel.vue"),
+    },
+    {
+      path: "/add/travel",
+      name: "addTravels",
+      component: () => import("../views/AddTravel.vue"),
+    },
+    {
+      path: "/calendar",
+      name: "calendar",
+      component: () => import("../views/Calendar.vue"),
+    },
+
+    // {
+    //   path: "/travels",
+    //   name: "travels",
+    //   component: () => import("../views/Travels.vue"),
+    // },
+    // {
+    //   path: "/travels/add",
+    //   name: "addTravels",
+    //   component: () => import("../views/AddTravels.vue"),
+    // },
+    // {
+    //   path: "/travels/add/step2",
+    //   name: "Step2AddTravel",
+    //   component: () => import("../components/travels/Step2AddTravel.vue"),
+    // },
+    // {
+    //   path: "/",
+    //   alias: "/tutorials",
+    //   name: "tutorials",
+    //   component: () => import("../components/TutorialsList.vue"),
+    // },
+    // {
+    //   path: "/tutorials/:id",
+    //   name: "tutorial-details",
+    //   component: () => import("../components/Tutorial.vue"),
+    // },
+    // {
+    //   path: "/add",
+    //   name: "add",
+    //   component: () => import("../components/AddTutorial.vue"),
+    // },
   ],
 });
 

@@ -226,105 +226,78 @@
       <main class="flex-1">
         <div class="py-6">
           <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-            <h1 class="text-2xl font-semibold text-gray-900">On part ou ?</h1>
+            <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
           </div>
           <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
             <!-- Replace with your content -->
             <div class="py-4">
-              <div class="px-4 sm:px-6 lg:px-8">
-                <div class="sm:flex sm:items-center">
-                  <div class="sm:flex-auto">
-                    <h1 class="text-xl font-semibold text-gray-900">Voyages</h1>
-                    <p class="mt-2 text-sm text-gray-700">
-                      Ta liste de voyages personnalisée
-                    </p>
-                  </div>
-                  <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                    <button
-                      type="button"
-                      class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-                    >
-                      <router-link to="/travels/add">
-                        ajouter un voyage</router-link
+              <div class="list row">
+                <div class="col-md-8">
+                  <div class="input-group mb-3">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Search by title"
+                      v-model="title"
+                    />
+                    <div class="input-group-append">
+                      <button
+                        class="btn btn-outline-secondary"
+                        type="button"
+                        @click="searchTitle"
                       >
-                      |
-                    </button>
+                        Search
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div
-                  class="-mx-4 mt-8 overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:-mx-6 md:mx-0 md:rounded-lg"
-                >
-                  <table class="min-w-full divide-y divide-gray-300">
-                    <thead class="bg-gray-50">
-                      <tr>
-                        <th
-                          scope="col"
-                          class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                        >
-                          Name
-                        </th>
-                        <th
-                          scope="col"
-                          class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
-                        >
-                          Title
-                        </th>
-                        <th
-                          scope="col"
-                          class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell"
-                        >
-                          Email
-                        </th>
-                        <th
-                          scope="col"
-                          class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                        >
-                          Role
-                        </th>
-                        <th
-                          scope="col"
-                          class="relative py-3.5 pl-3 pr-4 sm:pr-6"
-                        >
-                          <span class="sr-only">Edit</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 bg-white">
-                      <tr v-for="person in people" :key="person.email">
-                        <td
-                          class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
-                        >
-                          {{ person.name }}
-                        </td>
-                        <td
-                          class="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:table-cell"
-                        >
-                          {{ person.title }}
-                        </td>
-                        <td
-                          class="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell"
-                        >
-                          {{ person.email }}
-                        </td>
-                        <td
-                          class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
-                        >
-                          {{ person.role }}
-                        </td>
-                        <td
-                          class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
-                        >
-                          <a
-                            href="#"
-                            class="text-indigo-600 hover:text-indigo-900"
-                            >Edit<span class="sr-only"
-                              >, {{ person.name }}</span
-                            ></a
-                          >
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div class="col-md-6">
+                  <h4>Tutorials List</h4>
+                  <ul class="list-group">
+                    <li
+                      class="list-group-item"
+                      :class="{ active: index == currentIndex }"
+                      v-for="(tutorial, index) in tutorials"
+                      :key="index"
+                      @click="setActiveTutorial(tutorial, index)"
+                    >
+                      {{ tutorial.title }}
+                    </li>
+                  </ul>
+
+                  <button
+                    class="m-3 btn btn-sm btn-danger"
+                    @click="removeAllTutorials"
+                  >
+                    Remove All
+                  </button>
+                </div>
+                <div class="col-md-6">
+                  <div v-if="currentTutorial">
+                    <h4>Tutorial</h4>
+                    <div>
+                      <label><strong>Title:</strong></label>
+                      {{ currentTutorial.title }}
+                    </div>
+                    <div>
+                      <label><strong>Description:</strong></label>
+                      {{ currentTutorial.description }}
+                    </div>
+                    <div>
+                      <label><strong>Status:</strong></label>
+                      {{ currentTutorial.published ? "Published" : "Pending" }}
+                    </div>
+
+                    <router-link
+                      :to="'/tutorials/' + currentTutorial.id"
+                      class="badge badge-warning"
+                      >Edit</router-link
+                    >
+                  </div>
+                  <div v-else>
+                    <br />
+                    <p>Please click on a Tutorial...</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -336,7 +309,9 @@
   </div>
 </template>
 
-<script setup>
+<script>
+import TutorialDataService from "../services/TutorialDataService";
+
 import { ref } from "vue";
 import {
   Dialog,
@@ -360,32 +335,7 @@ import {
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
-const people = [
-  {
-    name: "Londres",
-    title: "Voyage culturel",
 
-    role: "du 26/09/2022 au 05/10/2022",
-  },
-  {
-    name: "Malte",
-    title: "Sejour linguistique",
-
-    role: "du 13/11/2002 au 20/11/2022",
-  },
-  {
-    name: "Iles canaries",
-    title: "En mode farniente",
-
-    role: "du 20/12/2022 au 28/12/2022",
-  },
-  {
-    name: "Rome",
-    title: "Séjour gastronomique et musical",
-    role: "du 15/01/2023 au 25/01/2023",
-  },
-  // More people...
-];
 const navigation = [
   { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
   { name: "Voyages", href: "/travels", icon: UsersIcon, current: false },
@@ -401,4 +351,69 @@ const userNavigation = [
 ];
 
 const sidebarOpen = ref(false);
+
+export default {
+  name: "tutorials-list",
+  data() {
+    return {
+      tutorials: [],
+      currentTutorial: null,
+      currentIndex: -1,
+      title: "",
+    };
+  },
+  methods: {
+    // recup toute la liste de tuto
+    retrieveTutorials() {
+      TutorialDataService.getAll()
+        .then((response) => {
+          this.tutorials = response.data;
+          console.log(reponse.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+    // rafraichir la liste en rappelant la fonction retrievelist
+    refreshList() {
+      this.retrieveTutorials();
+      this.currentTutorial = null;
+      this.currentIndex = -1;
+    },
+
+    //
+    setActiveTutorial(tutorial, index) {
+      this.currentTutorial = tutorial;
+      this.currentIndex = tutorial ? index : -1;
+    },
+
+    // supprimer toute la liste de la bdd et rafraichir la liste en appelant la fonction retrieve list
+    removeAllTutorials() {
+      TutorialDataService.deleteAll()
+        .then((response) => {
+          console.log(response.data);
+          this.refreshList();
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+
+    // rechercher un titre de tuto
+    searchTitle() {
+      TutorialDataService.findByTitle(this.title)
+        .then((response) => {
+          this.tutorials = response.data;
+          this.setActiveTutorial(null);
+          console.log(response.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+  },
+  mounted() {
+    this.retrieveTutorials();
+  },
+};
 </script>
