@@ -24,7 +24,6 @@
     "prettier": "^2.7.1",
     "vee-validate": "^4.6.4",
     "vue": "^3.2.37",
-    "vue-js-modal": "^2.0.1",
     "vue-router": "^4.0.13",
     "vuex": "^4.0.2",
     "yup": "^0.32.11"
