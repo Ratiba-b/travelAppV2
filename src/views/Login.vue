@@ -9,15 +9,15 @@
             Se connecter
           </h3>
           <div class="mt-2 max-w-xl text-sm text-gray-500">
-            <form v-show="tab === 'login'" class="items-center">
+            <form class="items-center" @submit.prevent="login">
               <!-- Email -->
               <div class="mb-3">
-                <label class="inline-block mb-2">Pseudo</label>
+                <label class="inline-block mb-2">email</label>
                 <input
                   type="text"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                   placeholder="Entrez votre pseudo"
-                  v-model="form.username"
+                  v-model="user.email"
                 />
               </div>
               <!-- Password -->
@@ -27,13 +27,12 @@
                   type="password"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                   placeholder="Mot de passe"
-                  v-model="form.password"
+                  v-model="user.password"
                 />
               </div>
               <button
                 type="submit"
                 class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
-                @click.prevent="login"
               >
                 Submit
               </button>
@@ -46,14 +45,15 @@
 </template>
 
 <script>
-import { mapStores } from "pinia";
-import { useAuthStore } from "../store/auth.module";
+import { accountService } from "../_services/account.service";
 
-import { reactive, computed, watch } from "vue";
+// import { mapStores } from "pinia";
+// import { useAuthStore } from "../stores/auth.module";
+
+// import { reactive, computed, watch } from "vue";
 import AppHeader from "@/components/Header.vue";
 // import { Form, input, ErrorMessage } from "vee-validate";
 // import * as yup from "yup";
-
 export default {
   name: "Auth",
   components: {
@@ -89,55 +89,87 @@ export default {
     // };
 
     return {
-      //tab affiche soit login soit register
-      tab: "login",
-      form: {
-        username: "",
-
+      user: {
+        email: "",
         password: "",
       },
-      regInSubmission: null,
-      regRegAlertVariant: "",
-      regAlertMsg: "",
+      //tab affiche soit login soit register
+      // tab: "login",
+      // form: {
+      //   username: "",
 
-      loading: false,
-      message: "",
+      //   password: "",
+      // },
+      // regInSubmission: null,
+      // regRegAlertVariant: "",
+      // regAlertMsg: "",
+
+      // loading: false,
+      // message: "",
       // schema,
       // validationError: {
       //   username: false,
       // },
     };
   },
-
-  computed: {
-    ...mapStores(useAuthStore),
-  },
-
   methods: {
     login() {
-      console.log(this.form);
-      fetch("http://localhost:3000/api/auth/login", {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(this.form),
-      })
-        .then((blob) => blob.json())
-        .then((data) => console.log(data))
-        .catch((error) => console.log(error));
-      // this.authStore.login(this.username, this.password).catch((error) =>
-      //   this.$emit("error", {
-      //     message: "Email ou mdp invalide",
-      //     type: "danger",
+      accountService
+        .login(this.user)
+        .then((res) => {
+          console.log(res.data);
+          accountService.saveToken(res.data.access_token);
+          this.$router.push("/admin/dashboard");
+        })
+        .catch((err) => console.log(err));
+
+      // fetch("http://localhost:8080/auth/login", {
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //   },
+      //   method: "POST",
+      //   body: JSON.stringify(this.user),
+      // })
+      //   .then((blob) => blob.json())
+      //   .then((data) => {
+      //     console.log(data);
+      //     localStorage.setItem("token", data.access_token);
+      //     this.$router.push("/admin/dashboard");
       //   })
-      // );
+      //   .catch((err) => console.log(err));
     },
-    // login(values) {
-    //   alert(JSON.stringify(values, null, 2));
-    // },
   },
+
+  // computed: {
+  //   ...mapStores(useAuthStore),
+  // },
+
+  // methods: {
+  //   login() {
+  //     console.log(this.form);
+  //     fetch("http://localhost:3000/api/auth/login", {
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "application/json",
+  //       },
+  //       method: "POST",
+  //       body: JSON.stringify(this.form),
+  //     })
+  //       .then((blob) => blob.json())
+  //       .then((data) => console.log(data))
+  //       .catch((error) => console.log(error));
+  //     // this.authStore.login(this.username, this.password).catch((error) =>
+  //     //   this.$emit("error", {
+  //     //     message: "Email ou mdp invalide",
+  //     //     type: "danger",
+  //     //   })
+  //     // );
+  //   },
+  //   // login(values) {
+  //   //   alert(JSON.stringify(values, null, 2));
+  //   // },
+  // },
   // computed: {
   //   loggedIn() {
   //     return this.$store.state.auth.status.loggedIn;

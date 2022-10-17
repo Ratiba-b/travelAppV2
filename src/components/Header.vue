@@ -11,6 +11,16 @@
         <ul class="flex flex-row mt-1">
           <!-- Navigation Links -->
           <li>
+            <router-link to="/contact" class="px-2 text-white">
+              Contact
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/cocktails" class="px-2 text-white">
+              Cocktails
+            </router-link>
+          </li>
+          <li>
             <router-link to="/login" class="px-2 text-white">
               Login
             </router-link>
@@ -26,17 +36,12 @@
             </router-link>
           </li>
           <li>
-            <router-link to="/add" class="px-2 text-white">
-              Ajouter tutorial
-            </router-link>
+            <router-link to="/add" class="px-2 text-white"> Tuto </router-link>
           </li>
           <li>
             <router-link to="/calendar" class="px-2 text-white">
-              Ajouter calendrier
+              Calendrier
             </router-link>
-          </li>
-          <li>
-            <a class="px-2 text-white" href="#">Manage</a>
           </li>
 
           <router-view />
