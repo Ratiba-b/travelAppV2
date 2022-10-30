@@ -124,6 +124,12 @@ export default {
     ...mapActions(useAuthStore, ["addUser"]),
 
     login() {
+      // storeAuth
+      //   .login(this.user.username, this.user.password)
+      //   .then(
+      //     this.$router.push("/admin/dashboard").catch((err) => console.log(err))
+      //   );
+
       try {
         storeAuth.login(this.user.username, this.user.password);
         if (storeAuth.user.roles.includes("ROLE_PRO")) {
@@ -139,6 +145,7 @@ export default {
           error: err,
           type: "danger",
         });
+        console.log("erreur login", err);
       }
 
       // console.log(this.user.username, this.user.password);

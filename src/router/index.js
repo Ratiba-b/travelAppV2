@@ -54,11 +54,11 @@ const router = createRouter({
           name: "userAdd",
           component: () => import("../views/admin/users/UserAdd.vue"),
         },
-        {
-          path: "todo",
-          name: "todo",
-          component: () => import("../components/Sidebar.vue"),
-        },
+        // {
+        //   path: "todo",
+        //   name: "todo",
+        //   component: () => import("../components/Todo.vue"),
+        // },
 
         {
           path: "cocktails/index", // landing oage

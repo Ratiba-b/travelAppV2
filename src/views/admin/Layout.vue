@@ -9,7 +9,6 @@
 <script>
 // import AdminHeader from "@/components/AdminHeader.vue";
 // import AdminNav from "@/components/AdminNav.vue";
-// import Sidebar from "@/components/Sidebar.vue";
 import Dashboard from "@/components/Dashboard.vue";
 
 export default {

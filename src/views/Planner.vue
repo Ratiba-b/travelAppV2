@@ -131,6 +131,11 @@
             <div
               class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8"
             >
+              <h2
+                class="mb-3 text-lg font-medium leading-6 text-gray-900 space-y-8 divide-y divide-gray-200"
+              >
+                Tu as {{ changeOnCount }} événements de prévu ! :)
+              </h2>
               <table class="min-w-full divide-y divide-gray-300">
                 <thead>
                   <tr>
@@ -167,34 +172,36 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                  <tr v-for="person in people" :key="person.email">
+                  <tr v-for="event in allEvents" :key="event.id">
                     <td
                       class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0"
                     >
-                      {{ person.start }}
+                      {{ event.start }}
                     </td>
                     <td
                       class="whitespace-nowrap py-4 px-3 text-sm text-gray-500"
                     >
-                      {{ person.end }}
+                      {{ event.end }}
                     </td>
                     <td
                       class="whitespace-nowrap py-4 px-3 text-sm text-gray-500"
                     >
-                      {{ person.description }}
+                      {{ event.description }}
                     </td>
                     <td
                       class="whitespace-nowrap py-4 px-3 text-sm text-gray-500"
                     >
-                      {{ person.location }}
+                      {{ event.location }}
                     </td>
                     <td
                       class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0"
                     >
-                      <a href="#" class="text-indigo-600 hover:text-indigo-900"
-                        >Supprimer<span class="sr-only"></span>
-                        <span>{{ person.name }}</span></a
+                      <button
+                        class="text-indigo-600 hover:text-indigo-900"
+                        @click="deleteEvent(event.planning_id)"
                       >
+                        Supprimer
+                      </button>
                     </td>
                   </tr>
                 </tbody>
@@ -205,27 +212,36 @@
       </div>
     </div>
   </div>
+  <section class="mt-20 mb-20 divide-y divide-gray-200">
+    <todo />
+  </section>
 </template>
 
 <script>
+import { nextTick } from "vue";
 import { useAuthStore } from "../stores/authStore";
+import Todo from "../components/Todo.vue";
 import Axios from "axios";
 const storeAuth = useAuthStore();
 export default {
   name: "Planner",
+  components: {
+    Todo,
+  },
 
   data() {
-    const people = [
-      {
-        start: "20/10/2022",
-        end: "25/10/2022",
-        description: "arrivée a l'aeroport",
-        location: "Londres",
-      },
-      // More people...
-    ];
     return {
-      people,
+      // les info du travel
+      travel: {
+        travel_id: "",
+        location: "",
+        start: "",
+        end: "",
+      },
+      //recup tous les events du planning
+      allEvents: [],
+
+      // envoi un nouvel element a la bdd
       event: {
         travel_id: "",
         start: "",
@@ -233,41 +249,101 @@ export default {
         description: "",
         location: "",
       },
-      travel: {
-        travel_id: "",
-        location: "",
-        start: "",
-        end: "",
-      },
+      // liste des events pour update
+      countEvents: 0,
 
       token: "",
+
+      todos: [],
     };
   },
   async created() {
-    this.token = storeAuth.token;
-    this.event.travel_id = this.$route.params.id;
-    console.log("id", this.travel_id);
-    const response = await Axios.get(
-      `http://localhost:8080/travels/${this.event.travel_id}`,
-      { headers: { "x-access-token": this.token } }
-    ).then(console.log("ok"));
-    console.log("response", response);
-    this.travel = {
-      travel_id: response.data.data.id,
-      location: response.data.data.location,
-      start: response.data.data.startDate,
-      end: response.data.data.endDate,
-    };
+    await this.getEvents();
+    console.log("created", this.allEvents.length);
   },
+  computed: {
+    changeOnCount() {
+      return (this.countEvents = this.allEvents.length);
+    },
+    changeDate(value) {
+      let newValue = value;
+      return console.log("value", newValue);
+      // return newValue.split("T").slice(0, 1).join("");
+    },
+  },
+
   methods: {
-    async addEvent() {
+    async getEvents() {
+      // recu le token pour avoir acces a l"api
+      this.token = storeAuth.token;
+
+      // recupere l'id du voyage selectionné pour recup toutes ses infos
+      this.event.travel_id = this.$route.params.id;
+      console.log("id", this.event.travel_id);
+
+      const response = await Axios.get(
+        `http://localhost:8080/travels/${this.event.travel_id}`,
+        { headers: { "x-access-token": this.token } }
+      ).then(console.log("ok"));
+      console.log("response", response);
+
+      // recup les données relatif au travel grace a travel id
+      this.travel = {
+        travel_id: response.data.data.id,
+        location: response.data.data.location,
+        start: response.data.data.startDate,
+        end: response.data.data.endDate,
+      };
+      // grace a la relation entre travel et planning on recup tous les plannings(events) du voyage
+      const plannings = response.data.data.Plannings;
+
+      const filteredEvent = [];
+
+      this.allEvents = filteredEvent;
+      // tri des plannings pour les ajouter un par un a allEvents
+      for (let i = 0; i < plannings.length; i++) {
+        // change le format de date
+        let startDate = plannings[i].start.split("T").slice(0, 1).join("");
+        let endDate = plannings[i].start.split("T").slice(0, 1).join("");
+
+        // recup les données de la response stockée dans planning pour mettre dans allEvents qui sera render
+        filteredEvent.push({
+          planning_id: plannings[i].id,
+          travel_id: plannings[i].travel_id,
+          start: startDate,
+          end: endDate,
+          description: plannings[i].description,
+          location: plannings[i].location,
+        });
+      }
+
+      // recuperer les todos dans réponse API push dans un tableau pour trier
+      const todo = response.data.data.Todos;
+      // todo.push(response.data.data.Todos);
+      const filteredTodo = [];
+      // tri todo filter pour envoie dans props
+      for (let i = 0; i < todo.length; i++) {
+        console.log("todo[i]", todo[i].id);
+        filteredTodo.push({
+          todo_id: todo[i].id,
+          task: todo[i].task,
+        });
+      }
+      this.todos = filteredTodo;
+
+      console.log("planning", response.data.data.Plannings.length);
+      console.log("allEvents", this.allEvents);
+      console.log("allEvents", filteredEvent);
+    },
+    addEvent() {
       console.log("addEvent", this.event);
-      await Axios.put("http://localhost:8080/plannings", this.event, {
+      Axios.put("http://localhost:8080/plannings", this.event, {
         headers: { "x-access-token": this.token },
       })
-        .then(console.log("ok"))
+        .then(() => {
+          this.getEvents();
+        })
         .catch((error) => console.log(error));
-
       this.event = {
         travel_id: this.$route.params.id,
         start: "",
@@ -275,6 +351,16 @@ export default {
         description: "",
         location: "",
       };
+    },
+    deleteEvent(eventId) {
+      console.log("event id", eventId);
+      Axios.delete(`http://localhost:8080/plannings/${eventId}`, {
+        headers: { "x-access-token": this.token },
+      })
+        .then(() => {
+          this.getEvents();
+        })
+        .catch((error) => console.log(error));
     },
   },
 };
