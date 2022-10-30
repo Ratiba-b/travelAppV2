@@ -1,5 +1,5 @@
 <template>
-  <app-header />
+  <publicNav />
 
   <main class="pt-20">
     <div class="px-4 sm:px-6 lg:px-8 h-56 flex justify-center m-20">
@@ -17,7 +17,7 @@
                   type="text"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                   placeholder="Entrez votre pseudo"
-                  v-model="user.email"
+                  v-model="user.username"
                 />
               </div>
               <!-- Password -->
@@ -45,22 +45,26 @@
 </template>
 
 <script>
+import { mapStores } from "pinia";
+import { useAuthStore } from "../stores/authStore";
 import { accountService } from "../_services/account.service";
+import { mapWritableState, mapState, mapActions } from "pinia";
 
-// import { mapStores } from "pinia";
 // import { useAuthStore } from "../stores/auth.module";
 
 // import { reactive, computed, watch } from "vue";
-import AppHeader from "@/components/Header.vue";
+import PublicNav from "@/components/PublicNav.vue";
 // import { Form, input, ErrorMessage } from "vee-validate";
 // import * as yup from "yup";
+
+const storeAuth = useAuthStore();
 export default {
   name: "Auth",
   components: {
     // Form,
     // Field,
     // ErrorMessage,
-    AppHeader,
+    PublicNav,
   },
   // setup(props, { emit }) {
   //   const { meta: formMeta, handleSubmit } = useForm();
@@ -89,10 +93,8 @@ export default {
     // };
 
     return {
-      user: {
-        email: "",
-        password: "",
-      },
+      user: { username: "", password: "" },
+
       //tab affiche soit login soit register
       // tab: "login",
       // form: {
@@ -112,16 +114,83 @@ export default {
       // },
     };
   },
+  computed: {
+    ...mapState(useAuthStore, ["getUser"]),
+
+    ...mapStores(useAuthStore),
+    ...mapWritableState(useAuthStore, ["user"]),
+  },
   methods: {
+    ...mapActions(useAuthStore, ["addUser"]),
+
     login() {
-      accountService
-        .login(this.user)
-        .then((res) => {
-          console.log(res.data);
-          accountService.saveToken(res.data.access_token);
+      try {
+        storeAuth.login(this.user.username, this.user.password);
+        if (storeAuth.user.roles.includes("ROLE_PRO")) {
+          console.log(" You're a pro welcome", storeAuth.user.roles);
           this.$router.push("/admin/dashboard");
-        })
-        .catch((err) => console.log(err));
+        } else {
+          console.log("not a pro", storeAuth.user.roles);
+          this.$router.push("/login");
+        }
+      } catch (err) {
+        this.$emit("error", {
+          message: "invalid username or password",
+          error: err,
+          type: "danger",
+        });
+      }
+
+      // console.log(this.user.username, this.user.password);
+      // storeAuth
+      //   .login(this.user.username, this.user.password)
+      //   .then(this.$router.push("/admin/dashboard"))
+      //   .catch((err) => {
+      //     this.$emit("error", {
+      //       message: "invalid username or password",
+      //       error: err,
+      //       type: "danger",
+      //     });
+      //   });
+      // if (storeAuth.user.roles.includes("ROLE_PRO")) {
+      //   console.log(" You're a pro welcome", storeAuth.user.roles);
+      //   this.$router.push("/admin/dashboard");
+      // } else {
+      //   console.log("not a pro", storeAuth.user.roles);
+      //   this.$router.push("/login");
+      // }
+      // storeAuth
+      //   .login(this.username, this.password)
+      //   .then(console.log("login successfully"))
+      //   .catch((err) => console.log(err));
+
+      // this.authStore.login(this.username, this.password).catch((err) =>
+      //   console.error("err", {
+      //     message: "Invalid email or password",
+      //   })
+      // );
+
+      /********************** auth ***********************************************/
+      // let user = [];
+      //       accountService
+      //         .login(this.user)
+      //         .then((res) => {
+      //           console.log(this.user);
+      //           accountService.saveToken(res.data.access_token);
+      //           console.log("token", res.data);
+      //           user = {
+      //             id: res.data.id,
+      //             username: res.data.username,
+      //             email: res.data.email,
+      //             roles: res.data.roles,
+      //           };
+      //           storeAuth.addUser(user);
+
+      //           console.log("storeAuth getUser", storeAuth.getUser);
+      //           this.$router.push("/admin/dashboard");
+      //         })
+      //         .catch((err) => console.log(err));
+      /********************** auth ***********************************************/
 
       // fetch("http://localhost:8080/auth/login", {
       //   headers: {

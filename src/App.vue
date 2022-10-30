@@ -7,12 +7,10 @@
 </template>
 
 <script>
-import Home from "./views/public/Home.vue";
+// import NotifBar from "@/components/NotifBar.vue";
 export default {
   name: "App",
 
-  components: {
-    Home,
-  },
+  components: {},
 };
 </script>

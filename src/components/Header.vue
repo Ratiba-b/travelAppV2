@@ -17,7 +17,7 @@
           </li>
           <li>
             <router-link to="/cocktails" class="px-2 text-white">
-              Cocktails
+              A propos
             </router-link>
           </li>
           <li>

@@ -1,8 +1,8 @@
-//Data service
+//Service for accessing data
 import axios from "axios";
-import authHeader from "./auth-header";
+import authHeader from "./auth-header"; // recupere token et info user
 
-const API_URL = "http://localhost:3000/api/test/";
+const API_URL = "http://localhost:8080/api/test/";
 
 class UserService {
   getPublicContent() {
@@ -14,7 +14,7 @@ class UserService {
   }
 
   getModeratorBoard() {
-    return axios.get(API_URL + "mod", { headers: authHeader() });
+    return axios.get(API_URL + "pro", { headers: authHeader() });
   }
 
   getAdminBoard() {

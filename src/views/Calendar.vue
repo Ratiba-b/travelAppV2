@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import CalendarTable from "../components/CalendarTable.vue";
+import CalendarTable from "../components/Planner.vue";
 import Agenda from "../components/Agenda.vue";
 
 export default {

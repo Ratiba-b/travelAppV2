@@ -1,5 +1,5 @@
 <template>
-  <app-header />
+  <publicNav />
 
   <main class="pt-20">
     <div class="px-4 sm:px-6 lg:px-8 h-56 flex justify-center m-20">
@@ -8,7 +8,7 @@
           <h3
             class="text-lg font-medium leading-6 text-gray-900 flex justify-center"
           >
-            Se connecter
+            S'enregistrer
           </h3>
           <div
             class="mt-2 max-w-xl text-sm text-gray-500 grid justify-items-center"
@@ -26,6 +26,14 @@
               <!-- Email -->
               <div class="mb-3 w-80">
                 <label class="inline-block mb-2">Email</label>
+                <input
+                  type="email"
+                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                  placeholder="Enter Email"
+                />
+              </div>
+              <div class="mb-3 w-80">
+                <label class="inline-block mb-2">Role</label>
                 <input
                   type="email"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
@@ -69,7 +77,7 @@
 </template>
 
 <script>
-import AppHeader from "@/components/Header.vue";
+import PublicNav from "@/components/PublicNav.vue";
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
 
@@ -79,7 +87,7 @@ export default {
     Form,
     Field,
     ErrorMessage,
-    AppHeader,
+    PublicNav,
   },
 
   data() {
@@ -96,8 +104,7 @@ export default {
         age: "",
         password: "",
         confirmedPassword: "",
-        country: "",
-        tos: "",
+        role: "",
       },
       regInSubmission: null,
       regRegAlertVariant: "",

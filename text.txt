@@ -1,3 +1,25 @@
+// alert("date click! " + arg.dateStr);
+storeEvents.events.push(this.newEvent);
+// storeEvents.eventToAdd = this.newEvent;
+// eventService.addEvent(this.newEvent);
+// storeEvents.addEvent(this.newEvent);
+// storeEvents.events;
+// storeEvents.addEvent();
+// console.log("add event", this.newEvent);
+// console.log(storeModal.hiddenClass); 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
   <section class="mb-8 py-20 text-white text-center relative">
     <div
       class="absolute inset-0 w-full h-full bg-contain introduction-bg"

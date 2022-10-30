@@ -8,21 +8,21 @@
 // });
 
 // export default store;
-import axios from "axios";
+import Axios from "axios";
 import { defineStore } from "pinia";
 
 export const useHttpStore = defineStore("http", {
   actions: {
     async post(url, datas) {
-      return await axios.post(url, datas);
+      return await Axios.post(url, datas);
     },
 
     async get(url, datas) {
-      return await axios.get(url, datas);
+      return await Axios.get(url, datas);
     },
 
     async put(url, datas) {
-      return await axios.put(url, datas);
+      return await Axios.put(url, datas);
     },
   },
 });

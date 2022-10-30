@@ -54,6 +54,11 @@ const router = createRouter({
           name: "userAdd",
           component: () => import("../views/admin/users/UserAdd.vue"),
         },
+        {
+          path: "todo",
+          name: "todo",
+          component: () => import("../components/Sidebar.vue"),
+        },
 
         {
           path: "cocktails/index", // landing oage
@@ -61,10 +66,56 @@ const router = createRouter({
           component: () => import("../views/admin/cocktails/CocktailIndex.vue"),
         },
         {
-          path: "cocktails/edit", // landing oage
+          path: "cocktails/edit/", // landing oage
           name: "cocktailEdit",
           component: () => import("../views/admin/cocktails/CocktailEdit.vue"),
         },
+        {
+          path: "cocktails/edit/:id", // landing oage
+          name: "Article",
+          component: () => import("../components/Article.vue"),
+        },
+        {
+          path: "article/upload", // landing oage
+          name: "ArticlePicture",
+          component: () => import("../views/admin/cocktails/PictureUpload.vue"),
+        },
+        {
+          path: "/user", // landing oage
+          name: "user",
+          component: () => import("../components/BoardUser.vue"),
+        },
+        {
+          path: "pro", // landing oage
+          name: "pro",
+          component: () => import("../components/BoardPro.vue"),
+        },
+        {
+          path: "/admin", // landing oage
+          name: "admin",
+          component: () => import("../components/BoardAdmin.vue"),
+        },
+        {
+          path: "travels",
+          name: "travels",
+          component: () => import("../views/TravelsList.vue"),
+        },
+        {
+          path: "edit/travel/:id",
+          name: "addTravels",
+          component: () => import("../views/EditTravel.vue"),
+        },
+        {
+          path: "add/travel",
+          name: "addTravels",
+          component: () => import("../views/AddTravel.vue"),
+        },
+        {
+          path: "calendar/:id",
+          name: "Planner",
+          component: () => import("../views/Planner.vue"),
+        },
+
         {
           path: "/:pathMatch(.*)*",
           redirect: "/admin/dashboard",
@@ -89,30 +140,30 @@ const router = createRouter({
       name: "tutorial-details",
       component: () => import("../components/Tutorial.vue"),
     },
-    {
-      path: "/add",
-      name: "add",
-      component: () => import("../components/AddTutorial.vue"),
-    },
-    {
-      path: "/travels",
-      name: "travels",
-      component: () => import("../views/TravelsList.vue"),
-    },
-    {
-      path: "/edit/travel/:id",
-      name: "addTravels",
-      component: () => import("../views/EditTravel.vue"),
-    },
-    {
-      path: "/add/travel",
-      name: "addTravels",
-      component: () => import("../views/AddTravel.vue"),
-    },
+    // {
+    //   path: "/add",
+    //   name: "add",
+    //   component: () => import("../components/AddTutorial.vue"),
+    // },
+    // {
+    //   path: "/travels",
+    //   name: "travels",
+    //   component: () => import("../views/TravelsList.vue"),
+    // },
+    // {
+    //   path: "/edit/travel/:id",
+    //   name: "addTravels",
+    //   component: () => import("../views/EditTravel.vue"),
+    // },
+    // {
+    //   path: "/add/travel",
+    //   name: "addTravels",
+    //   component: () => import("../views/AddTravel.vue"),
+    // },
     {
       path: "/calendar",
       name: "calendar",
-      component: () => import("../views/Calendar.vue"),
+      component: () => import("../components/Agenda.vue"),
     },
     {
       path: "/:pathMatch(.*)*",
@@ -154,10 +205,11 @@ const router = createRouter({
 
 //verouillage de la partie admin(token)
 router.beforeEach((to, from, next) => {
-  console.log(to.matched[0].name);
+  console.log("to.matched[0].name router", to.matched[0].name);
   // bloquer les routes children si pas de token
-  if (to.matched[0].name == "admin") {
+  if (localStorage.getItem("token")) {
     authGuard();
+    console.log("auth guard router", authGuard());
   }
 
   next();

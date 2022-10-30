@@ -1,12 +1,13 @@
 import { defineStore } from "pinia";
+import { auth } from "../store/auth.module";
 
-export const useEventsStore = defineStore("createEvent", {
+export const useUserStore = defineStore("user", {
   state: () => ({
-    events: [],
+    notifDisplay: false,
   }),
   getters: {
-    getEvents: (state) => {
-      return state.events;
+    getNotif: (state) => {
+      return state.notifDisplay;
     },
   },
   actions: {

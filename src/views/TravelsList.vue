@@ -1,7 +1,5 @@
 <template>
-  <app-header />
   <div class="">
-    <dashboard />
     <main class="ml-5 flex justify-center w-full">
       <div class="py-6">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
@@ -27,7 +25,7 @@
                 </div>
                 <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                   <router-link
-                    to="/add/travel"
+                    to="/admin/add/travel"
                     class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                   >
                     Ajouter un nouveau voyage
@@ -55,7 +53,13 @@
                               scope="col"
                               class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                             >
-                              Localisation
+                              Destination
+                            </th>
+                            <th
+                              scope="col"
+                              class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                            >
+                              Description
                             </th>
 
                             <th
@@ -73,33 +77,40 @@
                           </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
-                          <tr v-for="person in people" :key="person.id">
+                          <tr v-for="people in peoples" :key="people.id">
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
                             >
-                              {{ person.title }}
+                              {{ people.title }}
                             </td>
                             <td
                               class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                             >
-                              {{ person.localisation }}
+                              {{ people.location }}
                             </td>
                             <td
                               class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                             >
-                              {{ person.dates }}
+                              {{ people.description }}
+                            </td>
+                            <td
+                              class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                            >
+                              {{ people.startDate }} au {{ people.endDate }}
                             </td>
 
-                            <td
-                              class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
-                            >
-                              <router-link
-                                to="/calendar"
-                                class="text-indigo-600 hover:text-indigo-900"
+                            <div>
+                              <td
+                                class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
                               >
-                                voir
-                              </router-link>
-                            </td>
+                                <router-link
+                                  :to="people.href"
+                                  class="text-indigo-600 hover:text-indigo-900"
+                                >
+                                  voir
+                                </router-link>
+                              </td>
+                            </div>
                           </tr>
                         </tbody>
                       </table>
@@ -120,6 +131,10 @@
 // import Dashboard from "../components/Dashboard.vue";
 import AppHeader from "../components/Header.vue";
 import Dashboard from "../components/Dashboard.vue";
+import { useAuthStore } from "../stores/authStore";
+
+const storeAuth = useAuthStore();
+import { mapWritableState, mapState, mapActions, mapStores } from "pinia";
 export default {
   name: "TravelList",
 
@@ -130,19 +145,34 @@ export default {
   },
 
   data() {
-    const people = [
-      {
-        id: Date.now(),
-        title: "Weekend entre cops",
-        localisation: "Londres",
-        dates: "23/10/2022 au 30/10/2022",
-      },
-      // More people...
-    ];
+    const peoples = [];
 
     return {
-      people,
+      peoples,
+      travels: storeAuth.travels,
     };
+  },
+  mounted() {
+    if (storeAuth.isLogged()) {
+      storeAuth.getUser();
+
+      //mettre toute la reponse api dans une varibale
+      this.travels = storeAuth.travels;
+      // faire une boucle de cette variable pour recupere l'id travel de chaque voyage
+      for (let i = 0; i < this.travels.length; i++) {
+        console.log("travel", this.travels[i]);
+        this.peoples.push({
+          id: this.travels[i].id,
+          title: this.travels[i].title,
+          description: this.travels[i].description,
+          location: this.travels[i].location,
+          start: this.travels[i].startDate,
+          end: this.travels[i].endDate,
+          href: `/admin/calendar/${this.travels[i].id}`,
+        });
+      }
+      console.log("peoples", this.peoples);
+    }
   },
 };
 </script>

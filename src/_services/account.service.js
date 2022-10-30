@@ -2,11 +2,15 @@
 import Axios from "./caller.service";
 
 let login = (credentials) => {
-  return Axios.post("/auth/login", credentials);
+  return Axios.post("api/auth/signin", credentials);
 };
 
 let logout = () => {
   localStorage.removeItem("token");
+};
+
+let getToken = () => {
+  return localStorage.getItem("token");
 };
 
 let saveToken = (token) => {
@@ -23,4 +27,5 @@ export const accountService = {
   logout,
   saveToken,
   isLogged,
+  getToken,
 };

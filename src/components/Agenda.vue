@@ -1,14 +1,16 @@
 <template>
-  agenda
-  <FullCalendar v-bind:options="calendarOptions" />
-  <div
-    class="fixed z-10 inset-0 overflow-y-auto"
-    id="modal"
-    :class="hiddenClass"
-  >
-    <Event-modal :event="newEvent" />
+  <div class="w-5/6 ml-40">
+    <div class="ml-40">
+      <FullCalendar v-bind:options="calendarOptions" />
+      <div
+        class="fixed z-10 inset-0 overflow-y-auto"
+        id="modal"
+        :class="hiddenClass"
+      >
+        <Event-modal :event="newEvent" />
+      </div>
+    </div>
   </div>
-
   <!-- teleport target -->
 </template>
 
@@ -26,11 +28,12 @@ import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
 import { mapGetters } from "vuex";
 import { mapStores, mapState, mapActions, mapWritableState } from "pinia";
-import { useEventsStore } from "../store/piniaStore";
+import { useEventsStore } from "../stores/piniaStore";
 import EventModal from "./EventModal.vue";
 import { defineComponent, ref } from "vue";
-import store from "../store/store";
-import useModalStore from "../store/modalStore";
+
+import useModalStore from "../stores/modalStore";
+import Axios from "axios";
 
 const isShow = false;
 const modalActive = true;
@@ -72,11 +75,15 @@ export default {
         eventResize: this.updateEvent,
         eventDrop: this.updateEvent,
         eventDidMount: this.renderEvent,
+        getEvents: this.getEvents,
       },
       isModalVisible: false,
       isShowModal: false,
       newEvent: {},
     };
+  },
+  mounted() {
+    storeEvents.getEvents();
   },
   computed: {
     ...mapStores(useEventsStore, useModalStore),
@@ -90,7 +97,7 @@ export default {
       // console.log(arg);
       console.log("handleSelectClick() | arg: ", arg);
       this.newEvent = {
-        id: new Date().getTime(),
+        planning_id: 2,
         title: "ajouter  ",
         start: this.formatDate(arg.start),
         end: this.formatDate(arg.end),
@@ -100,7 +107,12 @@ export default {
       // this.calendarOptions.events.push(event);
 
       // alert("date click! " + arg.dateStr);
-      storeEvents.addEvent(this.newEvent);
+      // garder les events en dans le store
+      storeEvents.events.push(this.newEvent);
+      // pour ajouter un event a la fois dans la BDD
+      storeEvents.eventToAdd = this.newEvent;
+
+      // storeEvents.addEvent();
       console.log("add event", storeEvents.events);
       console.log(storeModal.hiddenClass);
     },
@@ -134,6 +146,9 @@ export default {
       storeEvents.updateEvent(arg.event);
       console.log("updateEvent () | newEvent", this.newEvent);
       console.log("updateEvent () arg.event", arg.event);
+    },
+    getEvents(arg) {
+      console.log("getEvents", arg);
     },
     renderEvent(arg) {
       console.log("renderEvent", arg);

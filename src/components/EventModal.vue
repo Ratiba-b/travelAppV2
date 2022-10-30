@@ -58,8 +58,8 @@
 <script>
 import { mapStores, mapState, mapActions, mapWritableState } from "pinia";
 
-import { useEventsStore } from "../store/piniaStore";
-import useModalStore from "../store/modalStore";
+import { useEventsStore } from "../stores/piniaStore";
+import useModalStore from "../stores/modalStore";
 
 const storeEvents = useEventsStore();
 
