@@ -147,7 +147,6 @@
 </template>
 
 <script>
-import AppHeader from "@/components/Header.vue";
 import { travelService } from "../_services/travels.service";
 import { useAuthStore } from "../stores/authStore";
 
@@ -156,9 +155,7 @@ const storeAuth = useAuthStore();
 export default {
   name: "AddTravel",
 
-  components: {
-    AppHeader,
-  },
+  components: {},
   data() {
     return {
       travel: {

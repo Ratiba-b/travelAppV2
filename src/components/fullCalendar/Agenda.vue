@@ -28,11 +28,11 @@ import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
 import { mapGetters } from "vuex";
 import { mapStores, mapState, mapActions, mapWritableState } from "pinia";
-import { useEventsStore } from "../stores/piniaStore";
+import { useEventsStore } from "../../../ignoreFolder/stores/fullcalendar/eventStore";
 import EventModal from "./EventModal.vue";
 import { defineComponent, ref } from "vue";
 
-import useModalStore from "../stores/modalStore";
+import useModalStore from "../../../ignoreFolder/stores/fullcalendar/modalStore";
 import Axios from "axios";
 
 const isShow = false;

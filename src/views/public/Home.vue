@@ -280,12 +280,12 @@
 </template>
 
 <script>
-import AppHeader from "@/components/Header.vue";
+// import AppHeader from "@/components/Header.vue";
 
 export default {
   name: "Home",
   components: {
-    AppHeader,
+    // AppHeader,
   },
 };
 </script>

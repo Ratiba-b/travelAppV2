@@ -30,11 +30,11 @@ export const useAuthStore = defineStore("auth", {
   //},
 
   actions: {
-    async login(username, password) {
-      console.log("credentials", username, password);
+    async login(user) {
+      console.log("credentials", user);
       const response = await this.http.post(`${this.API_URL}/api/signin`, {
-        username: username,
-        password: password,
+        username: user.username,
+        password: user.password,
       });
 
       console.log("response", response);
@@ -48,11 +48,11 @@ export const useAuthStore = defineStore("auth", {
       localStorage.setItem("userId", this.user.id);
       console.log("token", this.token);
       console.log("roles", this.user.roles);
-      // this.$router.push("/admin/dashboard");
       console.log("user", this.user.id);
     },
 
     isLogged() {
+      console.log("isLogged");
       return !!this.token;
     },
 
@@ -61,18 +61,26 @@ export const useAuthStore = defineStore("auth", {
       localStorage.clear();
       this.$reset();
     },
+
+    async register(user) {
+      const response = await this.http.put(`${this.API_URL}/api/signup`, {
+        username: user.username,
+        email: user.email,
+        roles: user.roles,
+        password: user.password.password,
+      });
+      console.log("response", response);
+      return response;
+    },
+
     async getUser() {
       // let id = localStorage.getItem("userId");
       console.log(this.user.id);
-      const response = await this.http.get(
-        `${this.API_URL}/users/${this.user.id}`,
-        {
-          data: {
-            id: this.user.id,
-          },
+      const response = await this.http
+        .get(`${this.API_URL}/users/${this.user.id}`, {
           headers: { "x-access-token": this.token },
-        }
-      );
+        })
+        .catch((err) => console.log("getUser", err));
       console.log(this.user.id);
       console.log("response", response);
       const datas = response.data;
@@ -90,12 +98,19 @@ export const useAuthStore = defineStore("auth", {
       return response;
     },
 
-    async getTravel() {
-      console.log("user", this.user.id);
-      const response = await this.http.post(`${this.API_URL}/travels/`, {
-        id: this.user.id,
-      });
-      console.log(response);
+    async getTravels(user) {
+      console.log("user", user);
+      const response = await this.http
+        .get(`${this.API_URL}/travels/`, {
+          id: user,
+          headers: { "x-access-token": this.token },
+        })
+        .catch((err) => console.error("getTravels", err));
+      console.log("travel response", response);
+      console.log("status", response.status);
+      this.travels = response.data.data;
+      console.log("status", response.status);
+      console.log("travels", this.travels);
     },
   },
 });

@@ -219,8 +219,8 @@
 
 <script>
 import { nextTick } from "vue";
-import { useAuthStore } from "../stores/authStore";
-import Todo from "../components/Todo.vue";
+import { useAuthStore } from "../../../stores/authStore";
+import Todo from "../../../components/Todo.vue";
 import Axios from "axios";
 const storeAuth = useAuthStore();
 export default {

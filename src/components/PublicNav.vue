@@ -18,7 +18,7 @@
           </li>
 
           <li>
-            <router-link to="/cocktails" class="px-2 text-white"
+            <router-link to="/about" class="px-2 text-white"
               >A propos</router-link
             >
           </li>
