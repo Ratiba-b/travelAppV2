@@ -1,17 +1,3 @@
-<!--
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
--->
 <template>
   <div class="w-5/6 ml-40">
     <div class="w-5/6"></div>
@@ -27,8 +13,6 @@
                 Tu pourras créer ton agenda perso après ca
               </p>
             </div>
-
-            <!-- apparait si le user est un pro  -->
             <section
               v-if="isTrue === true"
               class="mt-10 px-4 sm:px-0 dropdown-wrapper"
@@ -119,25 +103,14 @@
                       class="block text-sm font-medium text-gray-700"
                       >Quelle destination ?</label
                     >
-                    <!-- <input
+                    <input
                       type="text"
-                      name="destination"
-                      id="destination"
-                      autocomplete="destination"
+                      name="email-address"
+                      id="email-address"
+                      autocomplete="email"
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       v-model="travel.location"
-                      ref="cityRef"
-                    /> -->
-                    <vue-google-autocomplete
-                      id="map"
-                      ref="toAddress"
-                      classname="form-control"
-                      placeholder="Start typing"
-                      v-on:placechanged="getAddressData"
-                      types="(cities)"
-                      country="fr"
-                    >
-                    </vue-google-autocomplete>
+                    />
                   </div>
 
                   <div class="col-span-6 sm:col-span-4">
@@ -156,7 +129,7 @@
                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray"
                       v-model="travel.description"
                     >
- La grande fan de mangas que je suis à toujours voulu visiter le Japon. Ce moment est enfin arrivé...</textarea
+   La grande fan de mangas que je suis à toujours voulu visiter le Japon. Ce moment est enfin arrivé...</textarea
                     >
                   </div>
 
@@ -227,37 +200,17 @@ import { travelService } from "../../../_services/travels.service";
 import { useAuthStore } from "../../../stores/authStore";
 import { useClientStore } from "../../../stores/clientStore";
 import { useTravelStore } from "../../../stores/travelStore";
-import { useNotifStore } from "../../../stores/notifStore";
-import VueGoogleAutocomplete from "vue-google-autocomplete";
-import { onMounted, ref } from "vue";
-
-import { mapStores } from "pinia";
 
 const storeAuth = useAuthStore();
 const clientStore = useClientStore();
+const travelStore = useTravelStore();
 
 export default {
   name: "AddTravel",
 
-  components: {
-    VueGoogleAutocomplete,
-  },
-  setup() {
-    const cityRef = ref();
-    onMounted(() => {
-      const autocomplete = new google.maps.places.Autocomplete(cityRef.value, {
-        types: ["cities"],
-        filds: ["cities_components"],
-      });
-    });
-
-    return {
-      cityRef,
-    };
-  },
+  components: {},
   data() {
     return {
-      address: "",
       userRole: storeAuth.user.roles,
       isTrue: false,
       travel: {
@@ -275,10 +228,6 @@ export default {
       isVisible: false,
     };
   },
-  mounted() {
-    // this.$refs.address.focus();
-  },
-
   created() {
     this.addClient();
     this.travel.user_id = localStorage.getItem("userId");
@@ -286,7 +235,6 @@ export default {
   },
 
   computed: {
-    ...mapStores(useTravelStore, useNotifStore),
     dateFormat() {
       this.travel.startDate.split("T");
     },
@@ -304,46 +252,34 @@ export default {
     },
   },
   methods: {
-    /**
-     * When the location found
-     * @param {Object} addressData Data of the found location
-     * @param {Object} placeResultData PlaceResult object
-     * @param {String} id Input container ID
-     */
-    getAddressData(addressData, placeResultData, id) {
-      this.address = addressData;
-      console.log("address", addressData, placeResultData, id);
-    },
     selectItem(client) {
       this.selectedItem = client;
       console.log("Selected client", this.selectedItem);
     },
-    async addTravel() {
+    addTravel() {
       if (this.userRole.includes("ROLE_PRO")) {
         this.travel.created_for = this.selectedItem.id;
-        console.log("Selected client", this.selectedItem);
+        console.log("role", this.userRole);
       } else {
-        this.travel.created_for = this.travel.user_id;
-        console.log("user", this.travel.user_id);
+        this.travel.created_for = this.userId;
+        console.log("user travel", this.travel.created_for);
+        console.log("role", this.userRole);
       }
-      console.log(this.travel);
-      this.travelStore.saveTravel(this.travel);
+      console.log("user", this.travel.user_id);
+      console.log("Selected client", this.selectedItem);
 
-      this.notifStore.successDisplay = true;
-      this.travel = {
-        user_id: localStorage.getItem("user_id"),
-        title: "",
-        location: "",
-        description: "",
-        startDate: "",
-        endDate: "",
-        created_for: "",
-      };
-      this.$router.push("/home/add/travel/steps");
-      // this.travelStore.addTravel(this.travel).catch((err) => console.log(err));
+      travelStore.travels = this.travel;
+      travelStore.addNewTravel(this.travel);
+      console.log("addtravel", this.travel);
+      //   travelService
+      //     .addTravels(this.travel)
+      //     .then(
+      //       this.$router.push("/home/travels/list"),
+      //       console.log("envoyé", this.travel)
+      //     )
+      //     .catch((err) => console.log(err));
     },
     addClient() {
-      // retrouver le nom du client pour l'ajouter a la liste si c'est un pro de connecté
       if (this.userRole.includes("ROLE_PRO")) {
         clientStore
           .getAllClients()

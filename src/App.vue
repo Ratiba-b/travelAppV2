@@ -2,7 +2,7 @@
   <!-- <router-link to="/tutorials">Tuto</router-link> |
   <router-link to="/add">Add</router-link>
   <router-link to="/calendar">Calendar</router-link> -->
-
+  <!-- <NotifBar /> -->
   <router-view />
 </template>
 
@@ -11,6 +11,8 @@
 export default {
   name: "App",
 
-  components: {},
+  components: {
+    // NotifBar,
+  },
 };
 </script>

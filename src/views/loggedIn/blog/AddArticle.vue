@@ -163,11 +163,14 @@
 </template>
 
 <script>
-import { cocktailService } from "@/_services";
+// import { cocktailService } from "@/_services";
 import { watch } from "vue";
 import Axios from "axios";
+import { useBlogStore } from "../../../stores/blogStore";
+import { mapStores } from "pinia";
+
 export default {
-  name: "CocktailEdit",
+  name: "ArticleAdd",
   props: ["id"],
   data() {
     return {
@@ -186,6 +189,9 @@ export default {
       console.log("setup()", value.id);
     });
   },
+  computed: {
+    ...mapStores(useBlogStore),
+  },
 
   methods: {
     selectFile() {
@@ -203,27 +209,32 @@ export default {
       formData.append("description", this.article.description);
       formData.append("picture", this.article.picture);
       console.log("article");
-      try {
-        await Axios.put("http://localhost:8080/articles", formData, {
-          onUploadProgress: (uploadEvent) => {
-            console.log(
-              "upload progress " +
-                Math.round((uploadEvent.loaded / uploadEvent.total) * 100) +
-                "%"
-            );
-          },
-        }).then(this.$router.push("/admin/cocktails/index"));
-      } catch (err) {
-        console.log(err);
-      }
+
+      this.blogStore
+        .sendArticle(formData)
+        .catch((err) => console.log("error", err));
+
+      // try {
+      //   await Axios.put("http://localhost:8080/articles", formData, {
+      //     onUploadProgress: (uploadEvent) => {
+      //       console.log(
+      //         "upload progress " +
+      //           Math.round((uploadEvent.loaded / uploadEvent.total) * 100) +
+      //           "%"
+      //       );
+      //     },
+      //   }).then(this.$router.push("/home/blog"));
+      // } catch (err) {
+      //   console.log(err);
+      // }
     },
-    addCocktail() {
-      console.log("cocktail add", this.cocktail);
-      cocktailService
-        .createCocktail(this.cocktail)
-        .then((res) => this.$router.push("/admin/cocktails/index"))
-        .catch((err) => console.log(err));
-    },
+    // addCocktail() {
+    //   console.log("cocktail add", this.cocktail);
+    //   cocktailService
+    //     .createCocktail(this.cocktail)
+    //     .then((res) => this.$router.push("/admin/cocktails/index"))
+    //     .catch((err) => console.log(err));
+    // },
   },
 };
 </script>

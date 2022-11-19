@@ -25,7 +25,7 @@
                 </div>
                 <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
                   <router-link
-                    to="/admin/add/travel"
+                    to="/home/add/travel"
                     class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                   >
                     Ajouter un nouveau voyage
@@ -43,6 +43,13 @@
                       <table class="min-w-full divide-y divide-gray-300">
                         <thead class="bg-gray-50">
                           <tr>
+                            <th
+                              v-if="isTrue == true"
+                              scope="col"
+                              class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                            >
+                              Client
+                            </th>
                             <th
                               scope="col"
                               class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
@@ -78,6 +85,12 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
                           <tr v-for="travel in travelsList" :key="travel.id">
+                            <td
+                              v-if="isTrue == true"
+                              class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                            >
+                              {{ travel.client }}
+                            </td>
                             <td
                               class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
                             >
@@ -130,6 +143,9 @@
 <script>
 // import Dashboard from "../components/Dashboard.vue";
 import { useAuthStore } from "../../../stores/authStore";
+import { useClientStore } from "../../../stores/clientStore";
+import { useTravelStore } from "../../../stores/travelStore";
+import { ref } from "vue";
 
 const storeAuth = useAuthStore();
 import { mapWritableState, mapState, mapActions, mapStores } from "pinia";
@@ -139,45 +155,209 @@ export default {
   components: {
     // Dashboard,
   },
+  setup() {
+    const travelStore = useTravelStore();
+    const clientStore = useClientStore();
 
-  data() {
-    const travelsList = [];
+    const isTrue = ref(false);
+    const travelsList = ref([]);
+    const users = ref([]);
+    const client = ref([]);
+    const travels = ref([]);
 
-    return {
-      travelsList,
-      travels: storeAuth.travels,
+    // const getClients = async () => {
+    //   await clientStore.getAllClients();
+    //   users.value = clientStore.clients;
+    //   console.log("clients", users.value);
+    // };
+
+    const getTravelsAPI = async () => {
+      // recuperer les clients afin de les ajouter si le role est pro
+      await clientStore.getAllClients();
+      users.value = clientStore.clients;
+      console.log("users", users.value);
+
+      //recuperer les travels
+      await travelStore.getTravels();
+      travels.value = travelStore.travels;
+      console.log("travels", travels.value);
+
+      //  filter en fonction du role pour afficher client ou non
+
+      // storeAuth.getTravels().then((this.travels = storeAuth.travels));
+      // console.log("travels", this.travels);
+      console.log("created for", travels.value.created_for);
+      //mettre toute la reponse api dans une varibale
+      // let travels = storeAuth.travels;
+      // faire une recherche avec created_for dans le tableau client pour recup les infos
+      // faire une boucle de cette variable pour recupere l'id travel de for chaque voyage
+      // for(let i = 0; i < clients.length; i++)
+      for (let i = 0; i < travels.value.length; i++) {
+        console.log("created for client id :", travels.value[i].created_for);
+        // for (let j = 0; j < clients.length; i++) {
+        //   console.log("client", clients[j]);
+        // }
+        // let travelCreatedFor = this.travels[i].created_for;
+        if (localStorage.getItem("roles").includes("ROLE_PRO")) {
+          isTrue.value = true;
+          client.value = users.value.filter((element) => {
+            return element.id == travels.value[i].created_for;
+          });
+          // console.log("filter user", client.value[0]);
+          travelsList.value.push({
+            client: client.value[0].username,
+            clientId: client.value[0].id,
+            id: travels.value[i].id,
+            title: travels.value[i].title,
+            description: travels.value[i].description,
+            location: travels.value[i].location,
+            start: travels.value[i].startDate,
+            end: travels.value[i].endDate,
+            href: `/home/calendar/${travels.value[i].id}`,
+          });
+        } else {
+          travelsList.push({
+            id: travels.value[i].id,
+            title: travels.value[i].title,
+            description: travels.value[i].description,
+            location: travels.value[i].location,
+            start: travels.value[i].startDate,
+            end: travels.value[i].endDate,
+            href: `/home/calendar/${travels.value[i].id}`,
+          });
+        }
+      }
+      console.log("travels List", travelsList.value);
     };
+
+    // if (localStorage.getItem("roles").includes("ROLE_PRO")) {
+    //   isTrue.value = true;
+    //   client.value = users.value.filter((element) => {
+    //     console.log("element", element);
+    //     return element.id == travels.value.created_for;
+    //   });
+    //   console.log("filter client", client.value);
+    //   console.log("filter client", users.value);
+
+    //   console.log("isTrue", isTrue);
+    // // }
+
+    // for(let i = 0; i < users.length; i++)
+    //   // let travelCreatedFor = this.travels.value[i].created_for;
+    //   if (
+    //     travels.value[i].created_for &&
+    //     localStorage.getItem("roles").includes("ROLE_PRO")
+    //   ) {
+    //     travelsList.value.push({
+    //       client: client.value[0].username,
+    //       clientId: client.value[0].id,
+    //       id: travels.value[i].id,
+    //       title: travels.value[i].title,
+    //       description: travels.value[i].description,
+    //       location: travels.value[i].location,
+    //       start: travels.value[i].startDate,
+    //       end: travels.value[i].endDate,
+    //       href: `/home/calendar/${travels.value[i].id}`,
+    //     });
+    //   } else {
+    //     travels.valueList.push({
+    //       id: travels.value[i].id,
+    //       title: travels.value[i].title,
+    //       description: travels.value[i].description,
+    //       location: travels.value[i].location,
+    //       start: travels.value[i].startDate,
+    //       end: travels.value[i].endDate,
+    //       href: `/home/calendar/${travels.value[i].id}`,
+    //     });
+    //   }
+    // }
+    // console.log("travels.value List", travelsList, travelsList);
+    // };
+    console.log("hors function", travels.value);
+    // getClients();
+    getTravelsAPI();
+
+    return { travels, travelsList, isTrue, users, client };
   },
-  created() {
-    if (storeAuth.isLogged()) {
-      storeAuth.getTravels(storeAuth.user.id);
-      console.log("Travel created", storeAuth.user.id);
-      this.getTravels();
-    } else {
-      storeAuth.logout();
-    }
+  // data() {
+  //   const travelsList = [];
+
+  //   return {
+  //     travelsList,
+  //     travels: [],
+  //     isTrue: false,
+  //   };
+  // },
+  // async created() {
+  //   if (storeAuth.isLogged()) {
+  //     // storeAuth.getTravels();
+  //     // console.log("Travel created", storeAuth.user.id);
+  //     await this.travelStore
+  //       .getTravels()
+
+  //       .then((this.travels = this.travelStore.travels));
+  //     console.log("clients", useClientStore().clients);
+  //   } else {
+  //     storeAuth.logout();
+  //   }
+  //   this.getTravels();
+  // },
+  computed: {
+    ...mapStores(useClientStore, useAuthStore, useTravelStore),
   },
 
   methods: {
-    getTravels() {
-      console.log("travels", this.travels);
-      //mettre toute la reponse api dans une varibale
-      let travels = storeAuth.travels;
-      // faire une boucle de cette variable pour recupere l'id travel de chaque voyage
-      for (let i = 0; i < this.travels.length; i++) {
-        console.log("travel", this.travels[i]);
-        this.travelsList.push({
-          id: this.travels[i].id,
-          title: this.travels[i].title,
-          description: this.travels[i].description,
-          location: this.travels[i].location,
-          start: this.travels[i].startDate,
-          end: this.travels[i].endDate,
-          href: `/home/calendar/${this.travels[i].id}`,
-        });
-      }
-      console.log("travels List", this.travelsList);
-    },
+    // getTravels() {
+    //   // storeAuth.getTravels().then((this.travels = storeAuth.travels));
+    //   // console.log("travels", this.travels);
+    //   console.log("created for", this.travels.created_for);
+    //   //mettre toute la reponse api dans une varibale
+    //   // let travels = storeAuth.travels;
+    //   let clients = useClientStore().clients;
+    //   // faire une recherche avec created_for dans le tableau client pour recup les infos
+    //   // faire une boucle de cette variable pour recupere l'id travel de for chaque voyage
+    //   console.log("clients", clients);
+    //   // for(let i = 0; i < clients.length; i++)
+    //   for (let i = 0; i < this.travels.length; i++) {
+    //     console.log("travel", this.travels[i].created_for);
+    //     // for (let j = 0; j < clients.length; i++) {
+    //     //   console.log("client", clients[j]);
+    //     // }
+    //     // let travelCreatedFor = this.travels[i].created_for;
+    //     if (
+    //       this.travels[i].created_for &&
+    //       localStorage.getItem("roles").includes("ROLE_PRO")
+    //     ) {
+    //       this.isTrue = true;
+    //       let client = clients.filter((element) => {
+    //         return element.id == this.travels[i].created_for;
+    //       });
+    //       console.log("filter client", client);
+    //       this.travelsList.push({
+    //         client: client[0].username,
+    //         clientId: client[0].id,
+    //         id: this.travels[i].id,
+    //         title: this.travels[i].title,
+    //         description: this.travels[i].description,
+    //         location: this.travels[i].location,
+    //         start: this.travels[i].startDate,
+    //         end: this.travels[i].endDate,
+    //         href: `/home/calendar/${this.travels[i].id}`,
+    //       });
+    //     } else {
+    //       this.travelsList.push({
+    //         id: this.travels[i].id,
+    //         title: this.travels[i].title,
+    //         description: this.travels[i].description,
+    //         location: this.travels[i].location,
+    //         start: this.travels[i].startDate,
+    //         end: this.travels[i].endDate,
+    //         href: `/home/calendar/${this.travels[i].id}`,
+    //       });
+    //     }
+    //   }
+    //   console.log("travels List", this.travelsList);
+    // },
   },
 };
 </script>

@@ -3,6 +3,7 @@
 
   <main class="pt-20">
     <div class="px-4 sm:px-6 lg:px-8 h-56 flex justify-center m-20">
+      <notifBar />
       <div class="bg-white shadow sm:rounded-lg w-96 h-64">
         <div class="px-4 py-5 sm:p-6">
           {{ errors[0] }}
@@ -58,12 +59,13 @@ import useValidate from "@vuelidate/core";
 import { required, minLength } from "@vuelidate/validators";
 import { reactive, computed } from "vue";
 import PublicNav from "@/components/PublicNav.vue";
-
+import NotifBar from "../components/NotifBar.vue";
 const storeAuth = useAuthStore();
 export default {
   name: "Login",
   components: {
     PublicNav,
+    NotifBar,
   },
   setup() {
     const state = reactive({
@@ -98,10 +100,7 @@ export default {
       this.v$.$validate();
 
       if (!this.v$.$error) {
-        this.authStore
-          .login(this.state)
-          .then(this.$router.push("/home/dashboard"))
-          .catch((err) => console.log(err));
+        this.authStore.login(this.state).catch((err) => console.log(err));
       } else {
         console.log("error");
       }

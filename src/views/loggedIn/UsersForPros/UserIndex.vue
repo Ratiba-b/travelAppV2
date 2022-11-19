@@ -149,33 +149,51 @@
 <script>
 import { userService } from "@/_services";
 import { accountService } from "@/_services";
+import { useClientStore } from "../../../stores/clientStore";
 import AdminNav from "@/components/AdminNav.vue";
+import { ref } from "vue";
+
 export default {
   name: "UserIndex",
   components: {
     AdminNav,
   },
+  setup() {
+    const clientStore = useClientStore();
+
+    const users = ref([]);
+
+    const getClients = async () => {
+      await clientStore.getAllClients();
+      users.value = clientStore.clients;
+    };
+
+    getClients();
+
+    return { users };
+  },
   data() {
-    return { users: [] };
+    return {};
   },
   mounted() {
     accountService.getToken();
     console.log(accountService.getToken());
     console.log(userService.getAllUsers());
-    userService
-      .getAllUsers()
-      .then((res) => {
-        // 1er data est cote api le deucieme est cote front
 
-        this.users = res.data.data;
-        console.log(accountService.getToken());
-      })
-      .catch((err) => console.log(err));
+    // userService
+    //   .getAllUsers()
+    //   .then((res) => {
+    //     // 1er data est cote api le deucieme est cote front
+
+    //     this.users = res.data.data;
+    //     console.log(accountService.getToken());
+    //   })
+    //   .catch((err) => console.log(err));
   },
   methods: {
     goEdit(id) {
       console.log(id);
-      this.$router.push("/admin/users/edit/" + id);
+      this.$router.push("/home/users/edit/" + id);
     },
     del(index) {
       console.log(index);

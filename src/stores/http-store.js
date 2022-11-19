@@ -8,7 +8,7 @@
 // });
 
 // export default store;
-import Axios from "axios";
+import Axios from "../_services/caller.service";
 import { defineStore } from "pinia";
 
 export const useHttpStore = defineStore("http", {
@@ -23,6 +23,12 @@ export const useHttpStore = defineStore("http", {
 
     async put(url, datas) {
       return await Axios.put(url, datas);
+    },
+    async patch(url, datas) {
+      return await Axios.patch(url, datas);
+    },
+    async delete(url) {
+      return await Axios.patch(url);
     },
   },
 });

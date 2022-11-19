@@ -1,5 +1,6 @@
 <template>
   <div class="bg-white">
+    <TravelMaps />
     <div
       class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-y-16 gap-x-8 py-24 px-4 sm:px-6 sm:py-32 lg:max-w-7xl lg:grid-cols-2 lg:px-8"
     >
@@ -48,6 +49,23 @@
                     />
                   </div>
                 </div>
+                <div class="sm:col-span-3">
+                  <label
+                    for="first-name"
+                    class="block text-sm font-medium text-gray-700"
+                    >Heure</label
+                  >
+                  <div class="mt-1">
+                    <input
+                      type="time"
+                      name="first-name"
+                      id="first-name"
+                      autocomplete="given-name"
+                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      v-model="event.hourStart"
+                    />
+                  </div>
+                </div>
 
                 <div class="sm:col-span-3">
                   <label
@@ -63,6 +81,23 @@
                       autocomplete="family-name"
                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       v-model="event.end"
+                    />
+                  </div>
+                </div>
+                <div class="sm:col-span-3">
+                  <label
+                    for="first-name"
+                    class="block text-sm font-medium text-gray-700"
+                    >Heure</label
+                  >
+                  <div class="mt-1">
+                    <input
+                      type="time"
+                      name="first-name"
+                      id="first-name"
+                      autocomplete="given-name"
+                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      v-model="event.hourEnd"
                     />
                   </div>
                 </div>
@@ -141,31 +176,43 @@
                   <tr>
                     <th
                       scope="col"
-                      class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
+                      class="ml-1 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
                     >
-                      Début
+                      <button @click="filterDate">Début</button>
                     </th>
                     <th
                       scope="col"
-                      class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                      class="ml-1 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
+                    >
+                      <button @click="filterHour">Heure</button>
+                    </th>
+                    <th
+                      scope="col"
+                      class="ml-1 flex justify-center py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                     >
                       Fin
                     </th>
                     <th
                       scope="col"
-                      class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                      class="ml-1 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
+                    >
+                      Heure
+                    </th>
+                    <th
+                      scope="col"
+                      class="ml-1 py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                     >
                       Description
                     </th>
                     <th
                       scope="col"
-                      class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
+                      class="ml-1 py-3.5 px-3 text-left text-sm font-semibold text-gray-900"
                     >
                       Emplacement
                     </th>
                     <th
                       scope="col"
-                      class="relative py-3.5 pl-3 pr-4 sm:pr-6 md:pr-0"
+                      class="ml-1 relative py-3.5 pl-3 pr-4 sm:pr-6 md:pr-0"
                     >
                       <span class="sr-only"></span>
                     </th>
@@ -174,27 +221,37 @@
                 <tbody class="divide-y divide-gray-200">
                   <tr v-for="event in allEvents" :key="event.id">
                     <td
-                      class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0"
+                      class="ml-2 flex justify-center whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0"
                     >
                       {{ event.start }}
                     </td>
                     <td
-                      class="whitespace-nowrap py-4 px-3 text-sm text-gray-500"
+                      class="ml-1 whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0"
+                    >
+                      {{ event.hourStart }}
+                    </td>
+                    <td
+                      class="ml-1 whitespace-nowrap py-4 px-3 text-sm text-gray-500"
                     >
                       {{ event.end }}
                     </td>
                     <td
-                      class="whitespace-nowrap py-4 px-3 text-sm text-gray-500"
+                      class="ml-1 whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 md:pl-0"
+                    >
+                      {{ event.hourEnd }}
+                    </td>
+                    <td
+                      class="ml-1 whitespace-nowrap py-4 px-3 text-sm text-gray-500"
                     >
                       {{ event.description }}
                     </td>
                     <td
-                      class="whitespace-nowrap py-4 px-3 text-sm text-gray-500"
+                      class="ml-1 whitespace-nowrap py-4 px-3 text-sm text-gray-500"
                     >
                       {{ event.location }}
                     </td>
                     <td
-                      class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0"
+                      class="ml-1 relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 md:pr-0"
                     >
                       <button
                         class="text-indigo-600 hover:text-indigo-900"
@@ -222,11 +279,13 @@ import { nextTick } from "vue";
 import { useAuthStore } from "../../../stores/authStore";
 import Todo from "../../../components/Todo.vue";
 import Axios from "axios";
+import TravelMaps from "../travels/TravelMaps.vue";
 const storeAuth = useAuthStore();
 export default {
   name: "Planner",
   components: {
     Todo,
+    TravelMaps,
   },
 
   data() {
@@ -237,6 +296,8 @@ export default {
         location: "",
         start: "",
         end: "",
+        hourStart: "",
+        hourEnd: "",
       },
       //recup tous les events du planning
       allEvents: [],
@@ -312,6 +373,8 @@ export default {
           travel_id: plannings[i].travel_id,
           start: startDate,
           end: endDate,
+          hourStart: plannings[i].hourStart,
+          hourEnd: plannings[i].hourEnd,
           description: plannings[i].description,
           location: plannings[i].location,
         });
@@ -350,6 +413,8 @@ export default {
         end: "",
         description: "",
         location: "",
+        hourStart: "",
+        hourEnd: "",
       };
     },
     deleteEvent(eventId) {
@@ -361,6 +426,12 @@ export default {
           this.getEvents();
         })
         .catch((error) => console.log(error));
+    },
+
+    filterDate() {
+      this.allEvents.sort(function (a, b) {
+        return new Date(a.start) - new Date(b.start);
+      });
     },
   },
 };

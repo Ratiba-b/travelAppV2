@@ -38,6 +38,14 @@ const router = createRouter({
           path: "dashboard", // landing oage
           name: "dashboard",
           component: () => import("../views/loggedIn/Dashboard.vue"),
+          beforeEnter: (to, from, next) => {
+            if (authGuard() && localStorage.getItem("roles")) {
+              next();
+            } else {
+              console.log("router", to.matched[0].name);
+              next("/login");
+            }
+          },
         },
         {
           path: "users/list", // landing oage
@@ -47,7 +55,10 @@ const router = createRouter({
 
           beforeEnter: (to, from, next) => {
             if (
-              localStorage.getItem("roles").includes("ROLE_PRO", "ROLE_ADMIN")
+              localStorage
+                .getItem("roles")
+                .includes("ROLE_PRO", "ROLE_ADMIN") &&
+              authGuard()
             ) {
               next();
             } else {
@@ -65,7 +76,10 @@ const router = createRouter({
 
           beforeEnter: (to, from, next) => {
             if (
-              localStorage.getItem("roles").includes("ROLE_PRO", "ROLE_ADMIN")
+              localStorage
+                .getItem("roles")
+                .includes("ROLE_PRO", "ROLE_ADMIN") &&
+              authGuard()
             ) {
               next();
             } else {
@@ -109,13 +123,16 @@ const router = createRouter({
         },
 
         {
-          path: "article/edit/:id", // landing oage
-          name: "Article",
-          component: () => import("../components/Article.vue"),
+          path: "article/:id", // landing oage
+          name: "ArticleIndex",
+
+          component: () => import("../views/loggedIn/blog/Article.vue"),
 
           beforeEnter: (to, from, next) => {
             if (
-              localStorage.getItem("roles").includes("ROLE_USER", "ROLE_ADMIN")
+              localStorage
+                .getItem("roles")
+                .includes("ROLE_USER", "ROLE_ADMIN", "ROLE_ADMIN")
             ) {
               next();
             } else {
@@ -126,12 +143,15 @@ const router = createRouter({
         },
         {
           path: "article/add", // landing oage
-          name: "Article",
+          name: "AddArticle",
           component: () => import("../views/loggedIn/blog/AddArticle.vue"),
 
           beforeEnter: (to, from, next) => {
             if (
-              localStorage.getItem("roles").includes("ROLE_USER", "ROLE_ADMIN")
+              localStorage
+                .getItem("roles")
+                .includes("ROLE_USER", "ROLE_ADMIN") &&
+              authGuard()
             ) {
               next();
             } else {
@@ -146,14 +166,24 @@ const router = createRouter({
           component: () => import("../views/loggedIn/travels/TravelsList.vue"),
         },
         {
-          path: "edit/travel/:id",
-          name: "addTravels",
-          component: () => import("../views/loggedIn/travels/EditTravel.vue"),
+          path: "travel/maps/:id",
+          name: "maps",
+          component: () => import("../views/loggedIn/travels/TravelMaps.vue"),
         },
+        // {
+        //   path: "edit/travel/:id",
+        //   name: "addTravels",
+        //   component: () => import("../views/loggedIn/travels/EditTravel.vue"),
+        // },
         {
           path: "add/travel",
           name: "addTravels",
           component: () => import("../views/loggedIn/travels/AddTravel.vue"),
+        },
+        {
+          path: "add/travel/steps",
+          name: "steps",
+          component: () => import("../views/loggedIn/travels/AddSteps.vue"),
         },
         {
           path: "calendar/:id",
@@ -161,8 +191,13 @@ const router = createRouter({
           component: () => import("../views/loggedIn/planning/Planner.vue"),
         },
         {
+          path: "profile",
+          name: "ProfilePage",
+          component: () => import("../views/loggedIn/ProfilePage.vue"),
+        },
+        {
           path: "/:pathMatch(.*)*",
-          redirect: "/admin/dashboard",
+          redirect: "/home/dashboard",
         },
       ],
     },

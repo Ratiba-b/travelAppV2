@@ -49,6 +49,7 @@ export const useAuthStore = defineStore("auth", {
       console.log("token", this.token);
       console.log("roles", this.user.roles);
       console.log("user", this.user.id);
+      router.push("/home/dashboard");
     },
 
     isLogged() {
@@ -63,7 +64,11 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async register(user) {
+      console.log("user", user);
       const response = await this.http.put(`${this.API_URL}/api/signup`, {
+        createdBy: this.user.id,
+        name: user.name,
+        surname: user.surname,
         username: user.username,
         email: user.email,
         roles: user.roles,
@@ -98,12 +103,11 @@ export const useAuthStore = defineStore("auth", {
       return response;
     },
 
-    async getTravels(user) {
-      console.log("user", user);
+    async getTravels() {
+      console.log("user", this.user.id);
       const response = await this.http
         .get(`${this.API_URL}/travels/`, {
-          id: user,
-          headers: { "x-access-token": this.token },
+          id: this.user.id,
         })
         .catch((err) => console.error("getTravels", err));
       console.log("travel response", response);
@@ -111,6 +115,7 @@ export const useAuthStore = defineStore("auth", {
       this.travels = response.data.data;
       console.log("status", response.status);
       console.log("travels", this.travels);
+      return response;
     },
   },
 });
