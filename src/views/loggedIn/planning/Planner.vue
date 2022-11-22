@@ -1,5 +1,6 @@
 <template>
   <div class="bg-white">
+    {{ errors }}
     <div class="h-10 rounded-lg"></div>
     <main class="relative -mt-32">
       <div class="mx-auto max-w-screen-xl px-4 pb-6 sm:px-6 lg:px-8 lg:pb-16">
@@ -14,7 +15,7 @@
                 {{ travel.location }}
               </h2>
               <p class="mt-4 text-gray-500">
-                {{ travel.start }} au {{ travel.end }}
+                {{ travel.startDate }} au {{ travel.endDate }}
                 <!-- The walnut wood card tray is precision milled to perfectly fit a stack
           of Focus cards. The powder coated steel divider separates active cards
           from new ones, or can be used to archive important task lists. -->
@@ -152,12 +153,6 @@
                 <div class="pt-5">
                   <div class="flex justify-end">
                     <button
-                      type="button"
-                      class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                      Annuler
-                    </button>
-                    <button
                       type="submit"
                       class="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
@@ -292,6 +287,8 @@ import { useAuthStore } from "../../../stores/authStore";
 import Axios from "axios";
 import TravelMaps from "../travels/TravelMaps.vue";
 import { plannerService } from "../../../_services/planner.service";
+
+import { useTravelStore } from "../../../stores/travelStore";
 const storeAuth = useAuthStore();
 export default {
   name: "Planner",
@@ -299,8 +296,26 @@ export default {
     TravelMaps,
   },
   setup() {
+    const travelStore = useAuthStore();
+    const travel = ref({});
+
     const route = useRoute();
     const filteredEvent = ref([]);
+    const errors = ref([]);
+
+    const getTravelById = async () => {
+      console.log("travel id", filteredEvent.value.travel_id);
+      await travelStore
+        .getTravels(filteredEvent.value.travel_id)
+        .then((res) => {
+          console.log(res);
+          travel.value = res.data.data[0];
+        })
+        .catch((res) => {
+          console.log("res", res);
+          res.value.data.message;
+        });
+    };
     const getEvents = async () => {
       await plannerService.getEvents(route.params.id).then((res) => {
         for (let i = 0; i < res.data.data.length; i++) {
@@ -327,22 +342,25 @@ export default {
       console.log("events", filteredEvent.value);
     };
     getEvents();
+    getTravelById();
     return {
       filteredEvent,
       getEvents,
+      travel,
+      errors,
     };
   },
   data() {
     return {
       // les info du travel
-      travel: {
-        travel_id: "",
-        location: "",
-        start: "",
-        end: "",
-        hourStart: "",
-        hourEnd: "",
-      },
+      // travel: {
+      //   travel_id: "",
+      //   location: "",
+      //   start: "",
+      //   end: "",
+      //   hourStart: "",
+      //   hourEnd: "",
+      // },
       //recup tous les events du planning
       allEvents: [],
 

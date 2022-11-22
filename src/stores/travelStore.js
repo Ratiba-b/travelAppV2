@@ -54,12 +54,10 @@ export const useTravelStore = defineStore("travel", {
       console.log("envoyé", response);
     },
 
-    async getTravels() {
-      console.log("user", this.user.id);
+    async getTravels(id) {
+      console.log("user", id);
       const response = await this.http
-        .get(`${this.API_URL}/travels/`, {
-          id: this.user.id,
-        })
+        .get(`${this.API_URL}/travels/${id}`, {})
         .then((res) => {
           this.travels = res.data.data;
         })
