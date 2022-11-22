@@ -5,14 +5,8 @@ import Axios from "../_services/caller.service";
 
 export const useStepStore = defineStore("step", {
   state: () => ({
-    user: {
-      id: localStorage.getItem("userId"),
-
-      roles: localStorage.getItem("roles"),
-    },
-
-    travels: {},
-
+    steps: [],
+    travel: {},
     token: localStorage.getItem("token"),
 
     API_URL: "http://localhost:8080",
@@ -27,22 +21,39 @@ export const useStepStore = defineStore("step", {
   //},
 
   actions: {
-    addStep(step) {
-      console.log("addstep", step);
-      this.http
-        .put("http://localhost:8080/steps", this.step)
+    async getSteps(travel_id) {
+      console.log("travel_id", travel_id);
+      await this.http.get(`${this.API_URL}/steps/${travel_id}`).then((res) => {
+        this.steps = res.data.data;
+        console.log("this step", res);
+        //   for (let i = 0; i < res.data.data.length; i++) {
+        //     let start = res.data.data[i].start.split("T").slice(0, 1).join("");
+        //     let end = res.data.data[i].end.split("T").slice(0, 1).join("");
 
-        .then(() => {
-          this.getSteps();
-        })
-        .catch((error) => console.log(error));
-    },
-    async getSteps(step) {
-      const response = await Axios.get(
-        `http://localhost:8080/travels/${this.event.travel_id}`,
-        { headers: { "x-access-token": this.token } }
-      ).then(console.log("ok"));
-      console.log("response", response);
+        //     console.log("showstep", res.data.data[i]);
+        //     // this.steps.push({
+        //     //   step_id: res.data.data[i].id,
+        //     //   travel_id: res.data.data[i].travel_id,
+        //     //   city: res.data.data[i].city,
+        //     //   airline: res.data.data[i].airline,
+        //     //   depIata: res.data.data[i].depIata,
+        //     //   date: res.data.data[i].date,
+        //     //   depHour: res.data.data[i].depHour,
+        //     //   depTerminal: res.data.data[i].depTerminal,
+        //     //   arrIata: res.data.data[i].arrIata,
+        //     //   arrHour: res.data.data[i].arrHour,
+        //     //   arrTerminal: res.data.data[i].arrTerminal,
+        //     //   flightNumber: res.data.data[i].flightNumber,
+        //     //   country: res.data.data[i].country,
+        //     //   start: start,
+        //     //   end: end,
+        //     // });
+        //   }
+      });
+
+      // this.travels = res.data.data.Travel;
+
+      console.log("res", this.steps);
     },
   },
 });

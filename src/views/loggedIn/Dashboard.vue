@@ -31,6 +31,7 @@
     <body class="h-full">
     ```
   -->
+
   <div class="min-h-full">
     <main class="-mt-24 pb-8">
       <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -45,6 +46,7 @@
                 <h2 class="sr-only" id="profile-overview-title">
                   Profile Overview
                 </h2>
+                {{ userInfos }}
                 <div class="bg-white p-6">
                   <div class="sm:flex sm:items-center sm:justify-between">
                     <div class="sm:flex sm:space-x-5">
@@ -62,10 +64,10 @@
                           Welcome back,
                         </p>
                         <p class="text-xl font-bold text-gray-900 sm:text-2xl">
-                          {{ user.name }}
+                          {{ userInfos.username }}
                         </p>
                         <p class="text-sm font-medium text-gray-600">
-                          {{ user.role }}
+                          {{ role }}
                         </p>
                       </div>
                     </div>
@@ -181,19 +183,9 @@
   </div>
 </template>
 
-<script setup>
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Popover,
-  PopoverButton,
-  PopoverOverlay,
-  PopoverPanel,
-  TransitionChild,
-  TransitionRoot,
-} from "@headlessui/vue";
+<script>
+import { useAuthStore } from "../../stores/authStore";
+import { ref } from "vue";
 import {
   AcademicCapIcon,
   BanknotesIcon,
@@ -206,73 +198,98 @@ import {
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
+export default {
+  name: "Dashboard",
 
-const user = {
-  name: "Chelsea Hagon",
-  email: "chelsea.hagon@example.com",
-  role: "Human Resources Manager",
-  imageUrl:
-    "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  setup() {
+    const authStore = useAuthStore();
+    const userInfos = ref([]);
+    const role = ref("");
+
+    //recup les données du user
+    const getUserInfos = async () => {
+      await authStore.getUser();
+      userInfos.value = authStore.user;
+
+      if (localStorage.getItem("roles").includes("ROLE_PRO")) {
+        role.value = "Agence";
+      }
+      if (localStorage.getItem("roles").includes("ROLE_USER")) {
+        role.value = "Particulier";
+      }
+      if (localStorage.getItem("roles").includes("ROLE_CLIENT")) {
+        role.value = "Client";
+      }
+      if (localStorage.getItem("roles").includes("ROLE_ADMIN")) {
+        role.value = "Administrateur";
+      }
+    };
+    getUserInfos();
+    const user = {
+      name: "Chelsea Hagon",
+      email: "chelsea.hagon@example.com",
+      role: "Human Resources Manager",
+      imageUrl:
+        "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    };
+
+    const stats = [
+      { label: "voyages à venir", value: 12 },
+      { label: "voyages réalisés", value: 4 },
+      { label: "clients", value: 2 },
+    ];
+    const actions = [
+      {
+        icon: ClockIcon,
+        name: "Request time off",
+        href: "#",
+        iconForeground: "text-teal-700",
+        iconBackground: "bg-teal-50",
+      },
+      {
+        icon: CheckBadgeIcon,
+        name: "Benefits",
+        href: "#",
+        iconForeground: "text-purple-700",
+        iconBackground: "bg-purple-50",
+      },
+      {
+        icon: UsersIcon,
+        name: "Schedule a one-on-one",
+        href: "#",
+        iconForeground: "text-sky-700",
+        iconBackground: "bg-sky-50",
+      },
+      {
+        icon: BanknotesIcon,
+        name: "Payroll",
+        href: "#",
+        iconForeground: "text-yellow-700",
+        iconBackground: "bg-yellow-50",
+      },
+      {
+        icon: ReceiptRefundIcon,
+        name: "Submit an expense",
+        href: "#",
+        iconForeground: "text-rose-700",
+        iconBackground: "bg-rose-50",
+      },
+      {
+        icon: AcademicCapIcon,
+        name: "Training",
+        href: "#",
+        iconForeground: "text-indigo-700",
+        iconBackground: "bg-indigo-50",
+      },
+    ];
+
+    return {
+      actions,
+      stats,
+      user,
+      userInfos,
+      role,
+    };
+  },
 };
-const navigation = [
-  { name: "Home", href: "#", current: true },
-  { name: "Profile", href: "#", current: false },
-  { name: "Resources", href: "#", current: false },
-  { name: "Company Directory", href: "#", current: false },
-  { name: "Openings", href: "#", current: false },
-];
-const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
-];
-const stats = [
-  { label: "Vacation days left", value: 12 },
-  { label: "Sick days left", value: 4 },
-  { label: "Personal days left", value: 2 },
-];
-const actions = [
-  {
-    icon: ClockIcon,
-    name: "Request time off",
-    href: "#",
-    iconForeground: "text-teal-700",
-    iconBackground: "bg-teal-50",
-  },
-  {
-    icon: CheckBadgeIcon,
-    name: "Benefits",
-    href: "#",
-    iconForeground: "text-purple-700",
-    iconBackground: "bg-purple-50",
-  },
-  {
-    icon: UsersIcon,
-    name: "Schedule a one-on-one",
-    href: "#",
-    iconForeground: "text-sky-700",
-    iconBackground: "bg-sky-50",
-  },
-  {
-    icon: BanknotesIcon,
-    name: "Payroll",
-    href: "#",
-    iconForeground: "text-yellow-700",
-    iconBackground: "bg-yellow-50",
-  },
-  {
-    icon: ReceiptRefundIcon,
-    name: "Submit an expense",
-    href: "#",
-    iconForeground: "text-rose-700",
-    iconBackground: "bg-rose-50",
-  },
-  {
-    icon: AcademicCapIcon,
-    name: "Training",
-    href: "#",
-    iconForeground: "text-indigo-700",
-    iconBackground: "bg-indigo-50",
-  },
-];
 </script>

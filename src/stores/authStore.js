@@ -5,13 +5,9 @@ import Axios from "../_services/caller.service";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
-    user: {
-      id: localStorage.getItem("userId"),
-      username: null,
-      email: null,
-      roles: localStorage.getItem("roles"),
-    },
-
+    user: [],
+    id: localStorage.getItem("userId"),
+    roles: localStorage.getItem("roles"),
     travels: {},
 
     articles: {},
@@ -41,14 +37,14 @@ export const useAuthStore = defineStore("auth", {
       console.log("user id", response.data.id);
 
       this.token = response.data.access_token;
-      this.user.roles = response.data.roles;
-      this.user.id = response.data.id;
+      this.roles = response.data.roles;
+      this.id = response.data.id;
       localStorage.setItem("token", this.token);
-      localStorage.setItem("roles", this.user.roles);
-      localStorage.setItem("userId", this.user.id);
+      localStorage.setItem("roles", this.roles);
+      localStorage.setItem("userId", this.id);
       console.log("token", this.token);
-      console.log("roles", this.user.roles);
-      console.log("user", this.user.id);
+      console.log("roles", this.roles);
+      console.log("user", this.id);
       router.push("/home/dashboard");
     },
 
@@ -66,7 +62,7 @@ export const useAuthStore = defineStore("auth", {
     async register(user) {
       console.log("user", user);
       const response = await this.http.put(`${this.API_URL}/api/signup`, {
-        createdBy: this.user.id,
+        createdBy: this.id,
         name: user.name,
         surname: user.surname,
         username: user.username,
@@ -80,34 +76,22 @@ export const useAuthStore = defineStore("auth", {
 
     async getUser() {
       // let id = localStorage.getItem("userId");
-      console.log(this.user.id);
-      const response = await this.http
-        .get(`${this.API_URL}/users/${this.user.id}`, {
-          headers: { "x-access-token": this.token },
+      console.log(this.id);
+      await this.http
+        .get(`${this.API_URL}/users/${this.id}`)
+        .then((res) => {
+          this.user = res.data.data;
         })
         .catch((err) => console.log("getUser", err));
-      console.log(this.user.id);
-      console.log("response", response);
-      const datas = response.data;
 
-      this.user = {
-        id: datas.id,
-        username: datas.username,
-        email: datas.email,
-        roles: datas.roles,
-      };
-      this.travels = datas.data.Travels;
-      this.articles = datas.data.Articles;
-
-      console.log("data", datas.data.Travels);
-      return response;
+      console.log("data", this.user);
     },
 
     async getTravels() {
-      console.log("user", this.user.id);
+      console.log("user", this.id);
       const response = await this.http
         .get(`${this.API_URL}/travels/`, {
-          id: this.user.id,
+          id: this.id,
         })
         .catch((err) => console.error("getTravels", err));
       console.log("travel response", response);

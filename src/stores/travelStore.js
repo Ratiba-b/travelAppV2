@@ -12,7 +12,7 @@ export const useTravelStore = defineStore("travel", {
       roles: localStorage.getItem("roles"),
     },
 
-    travels: {},
+    travels: [],
 
     token: localStorage.getItem("token"),
 
@@ -60,13 +60,32 @@ export const useTravelStore = defineStore("travel", {
         .get(`${this.API_URL}/travels/`, {
           id: this.user.id,
         })
+        .then((res) => {
+          this.travels = res.data.data;
+        })
         .catch((err) => console.error("getTravels", err));
       console.log("travel response", response);
-      console.log("status", response.status);
-      this.travels = response.data.data;
-      console.log("status", response.status);
+      // for (let i = 0; i < response.data.data.length; i++) {
+      //   let lng = parseInt(response.data.data[i].longitude);
+      //   let lat = parseInt(response.data.data[i].latitude);
+      //   this.travels.push({
+      //     created_for: response.data.data[i].created_for,
+      //     description: response.data.data[i].description,
+      //     endDate: response.data.data[i].endDate,
+      //     id: response.data.data[i].id,
+      //     latitude: lat,
+      //     location: response.data.data[i].location,
+      //     longitude: lng,
+      //     startDate: response.data.data[i].startDate,
+      //     title: response.data.data[i].title,
+      //     user_id: response.data.data[i].user_id,
+      //   });
+      // }
       console.log("travels", this.travels);
-      return response;
+    },
+
+    async findTravelById(id) {
+      return await Axios.get(`/travels/${id}`);
     },
   },
 });

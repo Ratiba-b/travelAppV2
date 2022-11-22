@@ -13,222 +13,222 @@
   ```
 -->
 <template>
-  <div class="w-5/6 ml-40">
-    <div class="w-5/6"></div>
-    <form class="space-y-6 pl-40" @submit.prevent="addTravel">
-      <div class="bg-white px-4 py-5 shadow sm:rounded-lg sm:p-6 ml-40">
-        <div class="md:grid md:grid-cols-3 md:gap-6">
-          <div class="md:col-span-1">
-            <div class="px-4 sm:px-0">
-              <h3 class="text-lg font-medium leading-6 text-gray-900">
-                Ajoute un nouveau voyage
-              </h3>
-              <p class="mt-1 text-sm text-gray-600">
-                Tu pourras créer ton agenda perso après ca
-              </p>
-            </div>
+  <div class="h-10 rounded-lg"></div>
+  <main class="relative -mt-32">
+    <div class="mx-auto max-w-screen-xl px-4 pb-6 sm:px-6 lg:px-8 lg:pb-16">
+      <div class="overflow-hidden rounded-lg bg-white shadow">
+        <div class="h-20 rounded-lg"></div>
 
-            <!-- apparait si le user est un pro  -->
-            <section
-              v-if="isTrue === true"
-              class="mt-10 px-4 sm:px-0 dropdown-wrapper"
+        <form class="m-10 space-6" @submit.prevent="addTravel">
+          <div class="bg-white px-4 py-5 shadow sm:rounded-lg sm:p-6">
+            <div class="md:grid md:grid-cols-3">
+              <div class="md:col-span-1">
+                <div class="px-4 sm:px-0">
+                  <h3 class="text-lg font-medium leading-6 text-gray-900">
+                    Ajoute un nouveau voyage
+                  </h3>
+                  <p class="mt-1 text-sm text-gray-600">
+                    Tu pourras créer ton agenda perso après ca
+                  </p>
+                </div>
+
+                <!-- apparait si le user est un pro  -->
+                <section
+                  v-if="isTrue === true"
+                  class="mt-10 px-4 sm:px-0 dropdown-wrapper"
+                >
+                  <div @click="isVisible = !isVisible" class="selected-item">
+                    <span
+                      v-if="selectedItem"
+                      for="email-address"
+                      class="block text-sm font-medium text-gray-700"
+                      >{{ selectedItem.username }}</span
+                    >
+                    <span
+                      v-else
+                      for="email-address"
+                      class="block text-sm font-medium text-gray-700"
+                      >Quel voyageur ?
+                    </span>
+                    <svg
+                      :class="isVisible ? 'dropdown' : ''"
+                      class="w-6 h-6 drop-down-icon"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      ></path>
+                    </svg>
+                  </div>
+
+                  <div
+                    :class="isVisible ? 'visible' : 'invisible'"
+                    class="dropdown-popover"
+                  >
+                    <input
+                      type="text"
+                      name="email-address"
+                      id="email-address"
+                      autocomplete="email"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      placeholder="rechercher un client"
+                      v-model="searchQuery"
+                    />
+                    <span v-if="filteredClient.length === 0"
+                      >Pas de résultats</span
+                    >
+                    <div class="overflow-y-scroll">
+                      <div class="options">
+                        <ul>
+                          <li
+                            @click="selectItem(client)"
+                            v-for="(client, index) in filteredClient"
+                            :key="`user-${index}`"
+                          >
+                            {{ client.username }}
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+              <div class="mt-5 md:col-span-2 md:mt-0">
+                <div class="">
+                  <div class="bg-white px-4 py-5 sm:p-6">
+                    <div class="grid grid-cols-6 gap-6">
+                      <div class="col-span-6 sm:col-span-4">
+                        <label
+                          for="email-address"
+                          class="block text-sm font-medium text-gray-700"
+                          >Titre</label
+                        >
+                        <input
+                          type="text"
+                          name="email-address"
+                          id="email-address"
+                          autocomplete="email"
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          v-model="travel.title"
+                        />
+                      </div>
+
+                      <div class="col-span-6 sm:col-span-4">
+                        <label
+                          for="email-address"
+                          class="block text-sm font-medium text-gray-700"
+                          >Ville</label
+                        >
+                        <vue3-simple-typeahead
+                          id="typeahead_id"
+                          placeholder="Start writing..."
+                          :items="cities"
+                          @selectItem="selectCity"
+                          @onInput="onInput"
+                          @onBlur="onBlur"
+                          :itemProjection="
+                            (item) => {
+                              return item.name;
+                            }
+                          "
+                        >
+                        </vue3-simple-typeahead>
+                      </div>
+
+                      <div class="col-span-6 sm:col-span-4">
+                        <label
+                          for="email-address"
+                          class="block text-sm font-medium text-gray-700"
+                          >Quelle est la nature de ton séjour ?
+                        </label>
+                        <textarea
+                          rows="5"
+                          cols="33"
+                          type="text"
+                          name="email-address"
+                          id="email-address"
+                          autocomplete="email"
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray"
+                          v-model="travel.description"
+                        >
+                          La grande fan de mangas que je suis à toujours voulu visiter le Japon. Ce moment est enfin arrivé...</textarea
+                        >
+                      </div>
+
+                      <div class="col-span-6 sm:col-span-4">
+                        <label
+                          for="date"
+                          class="block text-sm font-medium text-gray-700"
+                          >Début</label
+                        >
+                        <input
+                          type="date"
+                          name="date"
+                          id="date"
+                          autocomplete="address-level2"
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          v-model="travel.startDate"
+                        />
+                      </div>
+
+                      <div class="col-span-6 sm:col-span-4">
+                        <label
+                          for="region"
+                          class="block text-sm font-medium text-gray-700"
+                          >Fin</label
+                        >
+                        <input
+                          type="date"
+                          name="region"
+                          id="region"
+                          autocomplete="address-level1"
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          v-model="travel.endDate"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="h-20 rounded-lg"></div>
+
+          <div class="flex justify-end">
+            <button
+              type="button"
+              class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
             >
-              <div @click="isVisible = !isVisible" class="selected-item">
-                <span
-                  v-if="selectedItem"
-                  for="email-address"
-                  class="block text-sm font-medium text-gray-700"
-                  >{{ selectedItem.username }}</span
-                >
-                <span
-                  v-else
-                  for="email-address"
-                  class="block text-sm font-medium text-gray-700"
-                  >Quel voyageur ?
-                </span>
-                <svg
-                  :class="isVisible ? 'dropdown' : ''"
-                  class="w-6 h-6 drop-down-icon"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </div>
-
-              <div
-                :class="isVisible ? 'visible' : 'invisible'"
-                class="dropdown-popover"
-              >
-                <input
-                  type="text"
-                  name="email-address"
-                  id="email-address"
-                  autocomplete="email"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  placeholder="rechercher un client"
-                  v-model="searchQuery"
-                />
-                <span v-if="filteredClient.length === 0">Pas de résultats</span>
-                <div class="overflow-y-scroll">
-                  <div class="options">
-                    <ul>
-                      <li
-                        @click="selectItem(client)"
-                        v-for="(client, index) in filteredClient"
-                        :key="`user-${index}`"
-                      >
-                        {{ client.username }}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </section>
+              Annuler
+            </button>
+            <button
+              type="submit"
+              class="ml-3 inline-flex justify-center rounded-md border border-transparent bg-pink-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
+            >
+              Enregistrer
+            </button>
           </div>
-          <div class="mt-5 md:col-span-2 md:mt-0">
-            <div class="overflow-hidden shadow sm:rounded-md">
-              <div class="bg-white px-4 py-5 sm:p-6">
-                <div class="grid grid-cols-6 gap-6">
-                  <div class="col-span-6 sm:col-span-4">
-                    <label
-                      for="email-address"
-                      class="block text-sm font-medium text-gray-700"
-                      >Titre</label
-                    >
-                    <input
-                      type="text"
-                      name="email-address"
-                      id="email-address"
-                      autocomplete="email"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      v-model="travel.title"
-                    />
-                  </div>
-
-                  <div class="col-span-6 sm:col-span-4">
-                    <label
-                      for="email-address"
-                      class="block text-sm font-medium text-gray-700"
-                      >Quelle destination ?</label
-                    >
-                    <!-- <input
-                      type="text"
-                      name="destination"
-                      id="destination"
-                      autocomplete="destination"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      v-model="travel.location"
-                      ref="cityRef"
-                    /> -->
-                    <vue-google-autocomplete
-                      id="map"
-                      ref="toAddress"
-                      classname="form-control"
-                      placeholder="Start typing"
-                      v-on:placechanged="getAddressData"
-                      types="(cities)"
-                      country="fr"
-                    >
-                    </vue-google-autocomplete>
-                  </div>
-
-                  <div class="col-span-6 sm:col-span-4">
-                    <label
-                      for="email-address"
-                      class="block text-sm font-medium text-gray-700"
-                      >Quelle est la nature de ton séjour ?
-                    </label>
-                    <textarea
-                      rows="5"
-                      cols="33"
-                      type="text"
-                      name="email-address"
-                      id="email-address"
-                      autocomplete="email"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-gray"
-                      v-model="travel.description"
-                    >
- La grande fan de mangas que je suis à toujours voulu visiter le Japon. Ce moment est enfin arrivé...</textarea
-                    >
-                  </div>
-
-                  <div class="col-span-6 sm:col-span-4">
-                    <label
-                      for="date"
-                      class="block text-sm font-medium text-gray-700"
-                      >Début</label
-                    >
-                    <input
-                      type="date"
-                      name="date"
-                      id="date"
-                      autocomplete="address-level2"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      v-model="travel.startDate"
-                    />
-                  </div>
-
-                  <div class="col-span-6 sm:col-span-4">
-                    <label
-                      for="region"
-                      class="block text-sm font-medium text-gray-700"
-                      >Fin</label
-                    >
-                    <input
-                      type="date"
-                      name="region"
-                      id="region"
-                      autocomplete="address-level1"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      v-model="travel.endDate"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </form>
+        <div class="h-10 rounded-lg"></div>
       </div>
-
-      <div class="flex justify-end">
-        <button
-          type="button"
-          class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
-        >
-          Annuler
-        </button>
-        <button
-          type="submit"
-          class="ml-3 inline-flex justify-center rounded-md border border-transparent bg-pink-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
-        >
-          Enregistrer
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <div class="hidden sm:block" aria-hidden="true">
-    <div class="py-5">
-      <div class="border-t border-gray-200" />
     </div>
-  </div>
+  </main>
 </template>
 
 <script>
 import { travelService } from "../../../_services/travels.service";
+import { flightsService } from "../../../_services/APIFlights.service";
+
 import { useAuthStore } from "../../../stores/authStore";
 import { useClientStore } from "../../../stores/clientStore";
 import { useTravelStore } from "../../../stores/travelStore";
 import { useNotifStore } from "../../../stores/notifStore";
-import VueGoogleAutocomplete from "vue-google-autocomplete";
 import { onMounted, ref } from "vue";
 
 import { mapStores } from "pinia";
@@ -239,40 +239,30 @@ const clientStore = useClientStore();
 export default {
   name: "AddTravel",
 
-  components: {
-    VueGoogleAutocomplete,
-  },
-  setup() {
-    const cityRef = ref();
-    onMounted(() => {
-      const autocomplete = new google.maps.places.Autocomplete(cityRef.value, {
-        types: ["cities"],
-        filds: ["cities_components"],
-      });
-    });
+  components: {},
 
-    return {
-      cityRef,
-    };
-  },
   data() {
     return {
       address: "",
-      userRole: storeAuth.user.roles,
+      userRole: localStorage.getItem("roles"),
       isTrue: false,
       travel: {
-        user_id: localStorage.getItem("user_id"),
+        user_id: localStorage.getItem("userId"),
         title: "",
-        location: "",
+        queryCity: "",
         description: "",
         startDate: "",
         endDate: "",
         created_for: "",
+        longitude: "",
+        latitude: "",
       },
       clientsList: [],
       searchQuery: "",
       selectedItem: null,
       isVisible: false,
+
+      cities: [],
     };
   },
   mounted() {
@@ -304,15 +294,40 @@ export default {
     },
   },
   methods: {
-    /**
-     * When the location found
-     * @param {Object} addressData Data of the found location
-     * @param {Object} placeResultData PlaceResult object
-     * @param {String} id Input container ID
-     */
-    getAddressData(addressData, placeResultData, id) {
-      this.address = addressData;
-      console.log("address", addressData, placeResultData, id);
+    onInput(event) {
+      this.travel.queryCity = event.input;
+      this.searchCity();
+    },
+    onBlur(event) {
+      this.travel.queryCity = event.input;
+      this.searchCity();
+    },
+    selectCity(item) {
+      this.travel.queryCity = item.name;
+      this.travel.longitude = item.longitude;
+      this.travel.latitude = item.latitude;
+    },
+    searchCity() {
+      let citiesResult = [];
+      console.log(this.travel.queryCity);
+      flightsService
+        .getCity(this.travel.queryCity)
+        .then((response) => {
+          for (let i = 0; i < 10; i++) {
+            if (response.data[i] == null) {
+              break;
+            }
+            citiesResult.push({
+              name: response.data[i].city_name,
+              longitude: response.data[i].longitude,
+              latitude: response.data[i].latitude,
+            });
+          }
+          this.cities = citiesResult;
+
+          console.log("cities", this.cities);
+        })
+        .catch((error) => console.log(error));
     },
     selectItem(client) {
       this.selectedItem = client;
@@ -329,7 +344,7 @@ export default {
       console.log(this.travel);
       this.travelStore.saveTravel(this.travel);
 
-      this.notifStore.successDisplay = true;
+      // this.notifStore.successDisplay = true;
       this.travel = {
         user_id: localStorage.getItem("user_id"),
         title: "",
@@ -339,7 +354,7 @@ export default {
         endDate: "",
         created_for: "",
       };
-      this.$router.push("/home/add/travel/steps");
+      this.$router.push("/home/travels/list");
       // this.travelStore.addTravel(this.travel).catch((err) => console.log(err));
     },
     addClient() {

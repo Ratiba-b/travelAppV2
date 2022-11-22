@@ -106,7 +106,7 @@ const router = createRouter({
         },
         {
           path: "blog", // landing oage
-          name: "blog",
+          name: "ArticlesList",
 
           component: () => import("../views/loggedIn/blog/ArticlesList.vue"),
 
@@ -165,11 +165,11 @@ const router = createRouter({
           name: "travels",
           component: () => import("../views/loggedIn/travels/TravelsList.vue"),
         },
-        {
-          path: "travel/maps/:id",
-          name: "maps",
-          component: () => import("../views/loggedIn/travels/TravelMaps.vue"),
-        },
+        // {
+        //   path: "travel/maps/:id",
+        //   name: "maps",
+        //   component: () => import("../views/loggedIn/travels/TravelMaps.vue"),
+        // },
         // {
         //   path: "edit/travel/:id",
         //   name: "addTravels",
@@ -181,14 +181,21 @@ const router = createRouter({
           component: () => import("../views/loggedIn/travels/AddTravel.vue"),
         },
         {
-          path: "add/travel/steps",
+          path: "add/travel/steps/:id",
           name: "steps",
           component: () => import("../views/loggedIn/travels/AddSteps.vue"),
         },
         {
           path: "calendar/:id",
           name: "Planner",
+
           component: () => import("../views/loggedIn/planning/Planner.vue"),
+        },
+        {
+          path: "travel/:id",
+          name: "Display",
+          component: () =>
+            import("../views/loggedIn/travels/DisplayOneTravel.vue"),
         },
         {
           path: "profile",

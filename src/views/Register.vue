@@ -15,7 +15,7 @@
           >
             <!-- Username -->
             <div class="mb-3 w-80">
-              <label class="inline-block mb-2">Username</label>
+              <label class="inline-block mb-2">Pseudo</label>
               <input
                 type="username"
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
@@ -24,6 +24,32 @@
               />
               <span v-if="v$.username.$error">
                 {{ v$.username.$errors[0].$message }}
+              </span>
+            </div>
+            <!-- name -->
+            <div class="mb-3 w-80">
+              <label class="inline-block mb-2">Prénom</label>
+              <input
+                type="name"
+                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                placeholder="Enter a username"
+                v-model="state.name"
+              />
+              <span v-if="v$.name.$error">
+                {{ v$.name.$errors[0].$message }}
+              </span>
+            </div>
+            <!-- surname -->
+            <div class="mb-3 w-80">
+              <label class="inline-block mb-2">Nom</label>
+              <input
+                type="username"
+                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+                placeholder="Enter a username"
+                v-model="state.surname"
+              />
+              <span v-if="v$.surname.$error">
+                {{ v$.surname.$errors[0].$message }}
               </span>
             </div>
             <!-- Email -->
@@ -115,6 +141,7 @@ import { required, email, minLength, sameAs } from "@vuelidate/validators";
 import { mapStores } from "pinia";
 import { reactive, computed } from "vue";
 import { useAuthStore } from "../stores/authStore";
+import { useNotifStore } from "../stores/notifStore";
 
 export default {
   name: "Register",
@@ -122,6 +149,7 @@ export default {
     PublicNav,
   },
   setup() {
+    const notifStore = useNotifStore();
     const state = reactive({
       username: "",
       email: "",
@@ -134,6 +162,8 @@ export default {
     const rules = computed(() => {
       return {
         username: { required },
+        name: { required },
+        surname: { required },
         email: { required, email },
         roles: { required },
         password: {
@@ -154,7 +184,7 @@ export default {
     };
   },
   computed: {
-    ...mapStores(useAuthStore),
+    ...mapStores(useAuthStore, useNotifStore),
   },
   methods: {
     register() {
@@ -164,7 +194,7 @@ export default {
         this.authStore
           .register(this.state)
           .then(() => this.$router.push("/login"))
-          .catch((err) => this.errors.push(err.message));
+          .catch(this.notifStore.displayNotif);
         console.log("ok");
       } else {
         console.log(this.v$.$errors[0].$message);

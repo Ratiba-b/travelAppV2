@@ -30,7 +30,7 @@ export const useNotifStore = defineStore("notif", {
       console.log("message", this.notifMessage);
     },
     displaySuccessNotif(state, display) {
-      console.log("displaynotif", state, display);
+      console.log("displaysuccess notif", state, display);
       state.notifDisplay = display;
     },
   },

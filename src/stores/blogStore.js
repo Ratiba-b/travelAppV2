@@ -1,13 +1,10 @@
 import { defineStore } from "pinia";
 import { useHttpStore } from "./http-store";
 import router from "@/router";
-import Axios from "../_services/caller.service";
 
 export const useBlogStore = defineStore("blog", {
   state: () => ({
-    travels: {},
-
-    articles: {},
+    articles: [],
     choosenArticle: {},
     picture: null,
     user: localStorage.getItem("userId"),
@@ -36,13 +33,14 @@ export const useBlogStore = defineStore("blog", {
 
     async getArticles() {
       console.log("user", this.user);
-      const response = await Axios.get(`${this.API_URL}/articles`, {
-        id: this.user,
-      });
-
-      console.log("response", response.data);
+      await this.http
+        .get(`${this.API_URL}/articles/`, { data: this.user })
+        .then((res) => {
+          this.articles = res.data.data;
+        })
+        .catch((err) => console.log(err));
       // liste de tous mes articles avec toutes les ifnos  ici l'id du chaque article
-      this.articles = response.data.data;
+
       console.log("article in blog store", this.articles);
     },
 
